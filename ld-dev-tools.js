@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.1
+// @version      0.2
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @match        https://lawyers.findlaw.com/*
@@ -15,9 +15,13 @@
     'use strict';
 
     // DATA LAYER DISPLAY://///////////////////////////////////////////////////////////////////////////////
+    var dataLayerText = 'FLDataLayer = ' + JSON.stringify(FLDataLayer,null,1)
+    if (typeof FlagsFLFE !== 'undefined') {
+        dataLayerText += ';\nFlagsFLFE = ' + JSON.stringify(FlagsFLFE,null,1) + ';';
+    }
     var dataLayerDiv = document.createElement('pre');
     dataLayerDiv.style.cssText = 'position: fixed;left: 86%;top: 5%;padding: 3px;color: black;background-color: lightgreen;width: 10%;font-size: x-small;opacity: 75%;';
-    dataLayerDiv.appendChild(document.createTextNode('FLDataLayer = ' + JSON.stringify(FLDataLayer,null,1)));
+    dataLayerDiv.appendChild(document.createTextNode(dataLayerText));
     document.body.appendChild(dataLayerDiv);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
