@@ -16,6 +16,9 @@ Install the chrome extension: https://chrome.google.com/webstore/detail/tampermo
 - If defined, exposes `FlagsFLFE` from the page
 	- this is the set of feature toggles active at the time the page was served by the application
 - If a profile page (ie: URI matching `/profile/*`), then indicate whether LD or PVIEW is serving the page
+	- this value is based on the `ldprofile` _response header_ value
+		- if `ldprofile: true`, then `LD`
+		- otherwise `PVEIW`
 
 #### Examples
 Page served from PVIEW, indicated as such, and FLDataLayer exposed:
