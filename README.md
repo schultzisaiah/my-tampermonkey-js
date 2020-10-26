@@ -19,6 +19,10 @@ Install the chrome extension: https://chrome.google.com/webstore/detail/tampermo
 	- this value is based on the `ldprofile` _response header_ value
 		- if `ldprofile: true`, then `LD`
 		- otherwise `PVEIW`
+- If defined, exposes the build identifier for the application serving the page
+	- ie: `FLLawyerDirectory-QA_20.11.1.19_9070`
+	- expected in the `BuildNumber` variable on the page
+	- should match the `instanceName` variable being set by Jenkins on app-start
 - Script is executed after the page is loaded, so there may be a short delay before the dev tool elements are displayed on the page
 
 #### Examples
