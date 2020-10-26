@@ -11,7 +11,7 @@ Install the chrome extension: https://chrome.google.com/webstore/detail/tampermo
 
 ## Usage
 ### LD Dev Tools
-#### ld-dev-tools.js
+[ld-dev-tools.js](/ld-dev-tools.js)
 - Exposes `FLDataLayer` from the page
 - If defined, exposes `FlagsFLFE` from the page
 	- this is the set of feature toggles active at the time the page was served by the application
@@ -21,3 +21,6 @@ Examples:
 ![Preview of data shown from PVIEW page](/readme_resources/ld-dev-tools-0.png)
 
 ![Preview of data shown from LD page](/readme_resources/ld-dev-tools-1.png)
+
+## Suggest fixes/updates/enhancements
+Please do submit pull-requests if you have specific enahncements or fixes that you'd like to exist within this toolset!
