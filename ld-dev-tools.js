@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.3
+// @version      0.4
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -14,6 +14,15 @@
 
 (function() {
     'use strict';
+
+    // Build Number:///////////////////////////////////////////////////////////////////////////////////////
+    if (typeof BuildNumber !== 'undefined') {
+        var buildNumDiv = document.createElement('pre');
+        buildNumDiv.style.cssText = 'position: fixed;left: 5%;top: 1%;padding: 3px;color: black;font-size: x-small;background-color: white;opacity: 75%;';
+        buildNumDiv.appendChild(document.createTextNode(BuildNumber));
+        document.body.appendChild(buildNumDiv);
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // DATA LAYER DISPLAY://///////////////////////////////////////////////////////////////////////////////
     var dataLayerText = 'FLDataLayer = ' + JSON.stringify(FLDataLayer,null,1)
