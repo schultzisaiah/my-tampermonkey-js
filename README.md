@@ -19,6 +19,7 @@ Install the chrome extension: https://chrome.google.com/webstore/detail/tampermo
 	- this value is based on the `ldprofile` _response header_ value
 		- if `ldprofile: true`, then `LD`
 		- otherwise `PVEIW`
+- Script is executed after the page is loaded, so there may be a short delay before the dev tool elements are displayed on the page
 
 #### Examples
 Page served from PVIEW, indicated as such, and FLDataLayer exposed:
