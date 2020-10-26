@@ -16,10 +16,11 @@ Install the chrome extension: https://chrome.google.com/webstore/detail/tampermo
 - If defined, exposes `FlagsFLFE` from the page
 	- this is the set of feature toggles active at the time the page was served by the application
 
-Examples:
-
+#### Examples
+Page served from PVIEW, indicated as such, and FLDataLayer exposed:
 ![Preview of data shown from PVIEW page](/readme_resources/ld-dev-tools-0.png)
 
+Page served from LD, indicated as such, and FLDataLaywer+toggles exposed:
 ![Preview of data shown from LD page](/readme_resources/ld-dev-tools-1.png)
 
 ## Suggest fixes/updates/enhancements
