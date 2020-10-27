@@ -32,5 +32,17 @@ Page served from PVIEW, indicated as such, and FLDataLayer exposed:
 Page served from LD, indicated as such, and FLDataLaywer+toggles exposed:
 ![Preview of data shown from LD page](/readme_resources/ld-dev-tools-1.png)
 
+### MyTime Helper
+[mytime-helper.js](/mytime-helper.js)
+1. Installing the script into the Tampermonkey extension
+2. Open the "MyTime Helper" script in the Tampermonkey editor (revealing the source code)
+3. Modify the "defaults" values to suit your desired auto-fill values
+	- I recommend saving these defaults somewhere else for reference. If Tampermonkey auto-updates this script, it may override your customizations.
+4. In MyTime, navigate to "Weekly View" tab
+5. In the "Show active Projects/tasks that have been used in the last:" dropdown menu, select "SIX MONTHS"
+	- this will trigger the helper script to populate the fields
+	- if values were already saved for the displayed week, then the script WILL NOT run, and the previous values will be preserved
+
+
 ## Suggest fixes/updates/enhancements
-Please do submit pull-requests if you have specific enahncements or fixes that you'd like to exist within this toolset!
+Please do submit pull-requests if you have specific enhancements or fixes that you'd like to exist within this toolset!
