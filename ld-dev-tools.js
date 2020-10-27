@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.8
+// @version      0.9
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -35,6 +35,16 @@
     dataLayerDiv.style.cssText = 'position: fixed;left: 86%;top: .6%;padding: 3px;color: black;background-color: lightgreen;width: 10%;font-size: x-small;opacity: 75%;';
     dataLayerDiv.appendChild(document.createTextNode(dataLayerText));
     document.body.appendChild(dataLayerDiv);
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // SRP CACHE WOKER? ///////////////////////////////////////////////////////////////////////////////////
+    var srpDiv = document.getElementById('serp_results');
+    if (srpDiv !== 'undefined' && String(srpDiv.innerHTML).includes('small-order-')) {
+        var cfCacheWorkerTag = document.createElement('div');
+        cfCacheWorkerTag.style.cssText = 'position: fixed;left: 5%;top: 6%;padding: 3px;color: black;font-size: x-small;background-color: orange;opacity: 75%;';
+        cfCacheWorkerTag.appendChild(document.createTextNode('CF SRP cache worker ran!'));
+        document.body.appendChild(cfCacheWorkerTag);
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // LD or PVIEW?////////////////////////////////////////////////////////////////////////////////////////
