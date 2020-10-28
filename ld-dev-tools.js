@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.9
+// @version      0.10
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -39,7 +39,7 @@
 
     // SRP CACHE WOKER? ///////////////////////////////////////////////////////////////////////////////////
     var srpDiv = document.getElementById('serp_results');
-    if (srpDiv !== 'undefined' && String(srpDiv.innerHTML).includes('small-order-')) {
+    if (srpDiv !== 'undefined' && srpDiv.innerHTML !== null && String(srpDiv.innerHTML).includes('small-order-')) {
         var cfCacheWorkerTag = document.createElement('div');
         cfCacheWorkerTag.style.cssText = 'position: fixed;left: 5%;top: 6%;padding: 3px;color: black;font-size: x-small;background-color: orange;opacity: 75%;';
         cfCacheWorkerTag.appendChild(document.createTextNode('CF SRP cache worker ran!'));
