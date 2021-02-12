@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.13
+// @version      0.14
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -53,30 +53,22 @@
 
         // LD or PVIEW?////////////////////////////////////////////////////////////////////////////////////////
         if (String(document.location).includes('/profile/')) {
-            GM_xmlhttpRequest({
-                method: "GET",
-                url: document.location,
-                onload: function(response) {
-                    var newDiv = document.createElement('div');
-                    var style = 'background-color: red;';
-                    var textVal = 'error';
+            var newDiv = document.createElement('div');
+            var style = 'background-color: red;';
+            var textVal = 'error';
+            if (FLDataLayer.pageVersion === 'ldprofile') {
+                textVal = '- LD -';
+                style = "background-color: lightgreen;"
+            } else {
+                textVal = '- PVIEW -';
+                style = "background-color: lightblue;"
+            }
 
-                    if (response.responseHeaders.includes('ldprofile: true')) {
-                        textVal = '- LD -';
-                        style = "background-color: lightgreen;"
-                    } else {
-                        textVal = '- PVIEW -';
-                        style = "background-color: lightblue;"
-                    }
+            newDiv.style.cssText = 'position: fixed;left: 47%;top: 1%;padding: 3px;color: black;font-weight: bolder;' + style;
 
-                    newDiv.style.cssText = 'position: fixed;left: 47%;top: 1%;padding: 3px;color: black;font-weight: bolder;' + style;
-
-                    var newContent = document.createTextNode(textVal);
-                    newDiv.appendChild(newContent);
-
-                    document.body.appendChild(newDiv);
-                }
-            });
+            var newContent = document.createTextNode(textVal);
+            newDiv.appendChild(newContent);
+            document.body.appendChild(newDiv);
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
     }
