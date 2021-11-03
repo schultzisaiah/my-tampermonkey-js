@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.15
+// @version      0.16
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -13,6 +13,16 @@
 // @match        https://www.lawinfo-stage.com/*
 // @match        https://www.lawinfo-qa.com/*
 // @match        https://www.lawinfo-dev.com/*
+// @match        https://www.flportaldev.int.thomsonreuters.com/*
+// @match        https://www.flportalqa.int.thomsonreuters.com/*
+// @match        https://www.flportalstage.int.thomsonreuters.com/*
+// @match        https://www.findlaw-stage.com/*
+// @match        https://findlaw.com/*
+// @match        https://www.findlaw.com/*
+// @match        https://public.flportaldev.int.thomsonreuters.com/*
+// @match        https://public.flportalqa.int.thomsonreuters.com/*
+// @match        https://public.flportalstage.int.thomsonreuters.com/*
+// @match        https://public.findlaw.com/*
 // @grant        GM_xmlhttpRequest
 // @noframes
 // ==/UserScript==
@@ -36,11 +46,25 @@
         if (typeof FL !== 'undefined') {
             dataLayerText += '\nFL = ' + JSON.stringify(FL,null,1) + ';';
         }
+        if (typeof document.getElementById('workers_data') !== 'undefined') {
+            var workersDataValue = 'NOT ON PAGE';
+            try {
+                var workersData = document.getElementById('workers_data').textContent.replace(/\n/g, '').replace(/\"/g, '"').replace("flan:", "\"flan\":").trim();
+                workersDataValue = JSON.stringify(JSON.parse(workersData),null,1) + ';'
+            } catch(err) {
+                try {
+                    workersDataValue = JSON.stringify(FLDataLayer.workers_data,null,1);
+                } catch(err2) {
+                    workersDataValue = 'ERROR: ' + err;
+                }
+            }
+            dataLayerText += '\nworkers_data = ' + workersDataValue;
+        }
         if (typeof FlagsFLFE !== 'undefined') {
             dataLayerText += '\nFlagsFLFE = ' + JSON.stringify(FlagsFLFE,null,1) + ';';
         }
         var dataLayerDiv = document.createElement('pre');
-        dataLayerDiv.style.cssText = 'position: fixed;left: 86%;top: .6%;padding: 3px;color: black;background-color: lightgreen;width: 10%;font-size: x-small;opacity: 75%; max-height: 97%;';
+        dataLayerDiv.style.cssText = 'position: fixed;left: 86%;top: .6%;padding: 3px;color: black;background-color: lightgreen;width: 10%;font-size: x-small;opacity: 75%; max-height: 97%; z-index: 9999';
         dataLayerDiv.appendChild(document.createTextNode(dataLayerText));
         document.body.appendChild(dataLayerDiv);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +103,7 @@
     catch(err) {
         var errorDiv = document.createElement('pre');
         errorDiv.style.cssText = 'position: fixed;left: 1%;bottom: 1%;padding: 3px;color: black;background-color: indianred;width: 98%;font-size: x-small;opacity: 75%;font-weight: bolder;';
-        errorDiv.appendChild(document.createTextNode('LD DEV TOOLS ERROR:\n' + err.message));
+        errorDiv.appendChild(document.createTextNode('LD DEV TOOLS ERROR:\n' + err));
         document.body.appendChild(errorDiv);
     }
 })();
