@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.17
+// @version      0.18
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -46,19 +46,19 @@
         if (typeof FL !== 'undefined') {
             dataLayerText += '\nFL = ' + JSON.stringify(FL,null,1) + ';';
         }
-        if (typeof document.getElementById('workers_data') !== 'undefined') {
-            var workersDataValue = 'NOT ON PAGE';
-            try {
-                var workersData = document.getElementById('workers_data').textContent.replace(/\n/g, '').replace(/\"/g, '"').replace("flan:", "\"flan\":").trim();
-                workersDataValue = JSON.stringify(JSON.parse(workersData),null,1) + ';'
-            } catch(err) {
-                if (typeof FLDataLayer.workers_data !== 'undefined') {
-                    // then it's already being shown
-                } else {
+        if (typeof FLDataLayer.workers_data === 'undefined') {
+            if (typeof document.getElementById('workers_data') !== 'undefined') {
+                var workersDataValue = 'NOT ON PAGE';
+                try {
+                    var workersData = document.getElementById('workers_data').textContent.replace(/\n/g, '').replace(/\"/g, '"').replace("flan:", "\"flan\":").trim();
+                    workersDataValue = JSON.stringify(JSON.parse(workersData),null,1) + ';'
+                } catch(err) {
                     workersDataValue = 'ERROR: ' + err;
                 }
+                dataLayerText += '\nworkers_data = ' + workersDataValue;
             }
-            dataLayerText += '\nworkers_data = ' + workersDataValue;
+        } else {
+            dataLayerText += '\nworkers_data = (in FLDataLayer)';
         }
         if (typeof FlagsFLFE !== 'undefined') {
             dataLayerText += '\nFlagsFLFE = ' + JSON.stringify(FlagsFLFE,null,1) + ';';
