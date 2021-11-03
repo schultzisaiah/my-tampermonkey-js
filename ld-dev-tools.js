@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.16
+// @version      0.17
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -52,9 +52,9 @@
                 var workersData = document.getElementById('workers_data').textContent.replace(/\n/g, '').replace(/\"/g, '"').replace("flan:", "\"flan\":").trim();
                 workersDataValue = JSON.stringify(JSON.parse(workersData),null,1) + ';'
             } catch(err) {
-                try {
-                    workersDataValue = JSON.stringify(FLDataLayer.workers_data,null,1);
-                } catch(err2) {
+                if (typeof FLDataLayer.workers_data !== 'undefined') {
+                    // then it's already being shown
+                } else {
                     workersDataValue = 'ERROR: ' + err;
                 }
             }
