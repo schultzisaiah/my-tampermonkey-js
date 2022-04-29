@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.18
+// @version      0.19
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -23,6 +23,17 @@
 // @match        https://public.flportalqa.int.thomsonreuters.com/*
 // @match        https://public.flportalstage.int.thomsonreuters.com/*
 // @match        https://public.findlaw.com/*
+// @match        https://www.superlawyers.com/*
+// @match        https://attorneys.superlawyers.com/*
+// @match        https://profiles.superlawyers.com/*
+// @match        https://www.abogado-stage.com/*
+// @match        https://www.abogado-qa.com/*
+// @match        https://www.superlawyers-qa.com/*
+// @match        https://www.superlawyers-stage.com/*
+// @match        https://attorneys.superlawyers-qa.com/*
+// @match        https://profiles.superlawyers-qa.com/*
+// @match        https://profiles.superlawyers-stage.com/*
+// @match        https://attorneys.superlawyers-stage.com/*
 // @grant        GM_xmlhttpRequest
 // @noframes
 // ==/UserScript==
