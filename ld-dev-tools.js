@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.19
+// @version      0.20
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -34,6 +34,7 @@
 // @match        https://profiles.superlawyers-qa.com/*
 // @match        https://profiles.superlawyers-stage.com/*
 // @match        https://attorneys.superlawyers-stage.com/*
+// @match        http://localhost:8080/*
 // @grant        GM_xmlhttpRequest
 // @noframes
 // ==/UserScript==
@@ -90,24 +91,33 @@
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // LD or PVIEW?////////////////////////////////////////////////////////////////////////////////////////
-        if (String(document.location).includes('/profile/')) {
-            var newDiv = document.createElement('div');
-            var style = 'background-color: red;';
-            var textVal = 'error';
-            if (FLDataLayer.pageVersion === 'ldprofile') {
-                textVal = '- LD -';
-                style = "background-color: lightgreen;"
+        // Shortcut to searchAPI=true /////////////////////////////////////////////////////////////////////////
+        if (String(document.location).includes('/search/') || String(document.location).includes('/lawyer/firm/')) {
+            var textVal = '';
+            var hrefVal = '';
+            if (String(document.location).includes('searchAPI=true')) {
+                hrefVal = String(document.location).replace('?searchAPI=true', '').replace('&searchAPI=true', '');
+                textVal = 'Remove searchAPI=true';
             } else {
-                textVal = '- PVIEW -';
-                style = "background-color: lightblue;"
+                var newParam = '';
+                if (String(document.location).includes('?')) {
+                    newParam = "&searchAPI=true";
+                } else {
+                    newParam = "?searchAPI=true";
+                }
+                textVal = 'Add searchAPI=true';
+                hrefVal = String(document.location) + newParam;
             }
+            var newLink = document.createElement('a');
+            var style = "background-color: lightblue;"
 
-            newDiv.style.cssText = 'position: fixed;left: 47%;top: 1%;padding: 3px;color: black;font-weight: bolder;' + style;
+            newLink.style.cssText = 'position: fixed;left: 47%;top: 1%;padding: 3px;color: black;font-weight: bolder;' + style;
 
             var newContent = document.createTextNode(textVal);
-            newDiv.appendChild(newContent);
-            document.body.appendChild(newDiv);
+            newLink.appendChild(newContent);
+            newLink.href = hrefVal;
+            newLink.target = '_blank';
+            document.body.appendChild(newLink);
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
     }
