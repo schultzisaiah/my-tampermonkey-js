@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.21
+// @version      0.22
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -92,12 +92,14 @@
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Shortcut to searchAPI=true /////////////////////////////////////////////////////////////////////////
-        if (String(document.location).includes('/search/') || String(document.location).includes('/lawyer/firm/')) {
+        if (String(document.location).includes('/search/') || String(document.location).includes('/lawyer/firm/') || String(document.location).includes('/profile/')) {
             var textVal = '';
             var hrefVal = '';
+            var style = '';
             if (String(document.location).includes('searchAPI=true')) {
                 hrefVal = String(document.location).replace('?searchAPI=true', '').replace('&searchAPI=true', '');
                 textVal = '[-] Remove searchAPI=true';
+                style = "background-color: lightgreen;"
             } else {
                 var newParam = '';
                 if (String(document.location).includes('?')) {
@@ -107,9 +109,9 @@
                 }
                 textVal = '[+] Add searchAPI=true';
                 hrefVal = String(document.location) + newParam;
+                style = "background-color: lightblue;"
             }
             var newLink = document.createElement('a');
-            var style = "background-color: lightblue;"
 
             newLink.style.cssText = 'position: fixed;left: 47%;top: 1%;padding: 3px;color: black;font-weight: bolder;' + style;
 
