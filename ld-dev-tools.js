@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.22
+// @version      0.23
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -107,6 +107,7 @@
                 } else {
                     newParam = "?searchAPI=true";
                 }
+                hrefVal = String(document.location).replace('?searchAPI=false', '').replace('&searchAPI=false', '');
                 textVal = '[+] Add searchAPI=true';
                 hrefVal = String(document.location) + newParam;
                 style = "background-color: lightblue;"
