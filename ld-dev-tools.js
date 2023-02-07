@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.23
+// @version      0.24
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -96,22 +96,27 @@
             var textVal = '';
             var hrefVal = '';
             var style = '';
-            if (String(document.location).includes('searchAPI=true')) {
-                hrefVal = String(document.location).replace('?searchAPI=true', '').replace('&searchAPI=true', '');
+            var newParam = '';
+            if (FLDataLayer.searchAPI) {
+                hrefVal = String(document.location).replace('searchAPI=true', '');
+                if (String(document.location).includes('?')) {
+                    newParam = "&searchAPI=false";
+                } else {
+                    newParam = "?searchAPI=false";
+                }
                 textVal = '[-] Remove searchAPI=true';
                 style = "background-color: lightgreen;"
             } else {
-                var newParam = '';
                 if (String(document.location).includes('?')) {
                     newParam = "&searchAPI=true";
                 } else {
                     newParam = "?searchAPI=true";
                 }
-                hrefVal = String(document.location).replace('?searchAPI=false', '').replace('&searchAPI=false', '');
+                hrefVal = String(document.location).replace('searchAPI=false', '');
                 textVal = '[+] Add searchAPI=true';
-                hrefVal = String(document.location) + newParam;
                 style = "background-color: lightblue;"
             }
+            hrefVal = hrefVal + newParam;
             var newLink = document.createElement('a');
 
             newLink.style.cssText = 'position: fixed;left: 47%;top: 1%;padding: 3px;color: black;font-weight: bolder;' + style;
