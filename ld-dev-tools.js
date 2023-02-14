@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.24
+// @version      0.25
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -116,6 +116,7 @@
                 textVal = '[+] Add searchAPI=true';
                 style = "background-color: lightblue;"
             }
+            hrefVal = href.replace('lawyers.findlaw.com', 'lawyers-a.findlaw.com');
             hrefVal = hrefVal + newParam;
             var newLink = document.createElement('a');
 
