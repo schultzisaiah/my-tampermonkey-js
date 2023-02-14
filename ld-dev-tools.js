@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.26
+// @version      0.27
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
 // @match        https://lawyers.findlaw.com/*
+// @match        https://lawyers-a.findlaw.com/*
+// @match        https://lawyers-b.findlaw.com/*
 // @match        https://lawyers.findlaw-stage.com/*
 // @match        https://lawyers-stage.findlaw.com/*
 // @match        https://lawyers-qa.findlaw.com/*
