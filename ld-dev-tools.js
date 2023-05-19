@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.27
+// @version      0.28
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -130,6 +130,10 @@
             newLink.target = '_blank';
             document.body.appendChild(newLink);
         }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Shortcut to searchAPI=true /////////////////////////////////////////////////////////////////////////
+        document.getElementById('acs-commons-env-indicator').style.visibility = 'hidden';
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
     }
     catch(err) {
