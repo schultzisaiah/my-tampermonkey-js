@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.30
+// @version      0.31
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -96,7 +96,10 @@
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Shortcut to disable env indicator //////////////////////////////////////////////////////////////////
-        document.getElementById('acs-commons-env-indicator')?.style?.visibility = 'hidden';
+        var envInd = document.getElementById('acs-commons-env-indicator');
+        if (envInd !== 'undefined' && envInd !== null) {
+            envInd.style.visibility = 'hidden';
+        }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
     }
     catch(err) {
