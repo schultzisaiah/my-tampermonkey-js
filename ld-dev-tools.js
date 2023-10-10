@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.29
+// @version      0.30
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -95,47 +95,8 @@
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // Shortcut to searchAPI=true /////////////////////////////////////////////////////////////////////////
-        if (String(document.location).includes('/search/') || String(document.location).includes('/lawyer/firm/') || String(document.location).includes('/profile/')) {
-            var textVal = '';
-            var hrefVal = '';
-            var style = '';
-            var newParam = '';
-            if (FLDataLayer.searchAPI) {
-                hrefVal = String(document.location).replace('searchAPI=true', '');
-                if (String(document.location).includes('?')) {
-                    newParam = "&searchAPI=false";
-                } else {
-                    newParam = "?searchAPI=false";
-                }
-                textVal = '[-] Remove searchAPI=true';
-                style = "background-color: lightgreen;"
-            } else {
-                if (String(document.location).includes('?')) {
-                    newParam = "&searchAPI=true";
-                } else {
-                    newParam = "?searchAPI=true";
-                }
-                hrefVal = String(document.location).replace('searchAPI=false', '');
-                textVal = '[+] Add searchAPI=true';
-                style = "background-color: lightblue;"
-            }
-            hrefVal = hrefVal.replace('lawyers.findlaw.com', 'lawyers-a.findlaw.com');
-            hrefVal = hrefVal + newParam;
-            var newLink = document.createElement('a');
-
-            newLink.style.cssText = 'position: fixed;left: 47%;top: 1%;padding: 3px;color: black;font-weight: bolder;' + style;
-
-            var newContent = document.createTextNode(textVal);
-            newLink.appendChild(newContent);
-            newLink.href = hrefVal;
-            newLink.target = '_blank';
-            document.body.appendChild(newLink);
-        }
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // Shortcut to searchAPI=true /////////////////////////////////////////////////////////////////////////
-        document.getElementById('acs-commons-env-indicator').style.visibility = 'hidden';
+        // Shortcut to disable env indicator //////////////////////////////////////////////////////////////////
+        document.getElementById('acs-commons-env-indicator')?.style?.visibility = 'hidden';
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
     }
     catch(err) {
