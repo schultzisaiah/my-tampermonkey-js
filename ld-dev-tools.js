@@ -52,7 +52,7 @@
             buildNumTxt = BuildNumber;
         }
         var buildNumDiv = document.createElement('pre');
-        buildNumDiv.style.cssText = 'position: fixed;left: 5%;top: 1%;padding: 3px;color: black;font-size: x-small;background-color: white;opacity: 75%;';
+        buildNumDiv.style.cssText = 'position: fixed;left: 5%;top: 1%;padding: 3px;color: black;font-size: x-small;background-color: white;opacity: 75%;z-index: 9999;';
         buildNumDiv.appendChild(document.createTextNode(buildNumTxt));
         document.body.appendChild(buildNumDiv);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
