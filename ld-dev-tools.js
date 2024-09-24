@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.34
+// @version      0.35
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -48,7 +48,7 @@
 
 (function() {
     'use strict';
-    if (typeof datalayer !== 'undefined' && datalayer.ldDevtools === 'disable') {
+    if (typeof dataLayer !== 'undefined' && dataLayer.ldDevtools === 'disable') {
         return;
     }
     try {
