@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.41
+// @version      0.42
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -177,6 +177,12 @@
                 dataLayerContainer.style.height = '48px'; // A fixed height for the header
             }
             isMinimized = !isMinimized;
+        });
+        
+        // Add double-click to reset position functionality
+        header.addEventListener('dblclick', () => {
+            dataLayerContainer.style.left = '86%';
+            dataLayerContainer.style.top = '0.6%';
         });
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
