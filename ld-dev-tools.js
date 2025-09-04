@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      0.44
+// @version      1.0
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -70,7 +70,7 @@
 
         switch(environment) {
             case 'prod':
-                buildNumBgColor = 'rgba(239, 68, 68, 0.6)'; // Red
+                buildNumBgColor = 'rgba(200, 0, 0, 0.65)'; // Red
                 textColor = 'white';
                 break;
             case 'stage':
@@ -247,7 +247,7 @@
         header.style.cssText = `
             background-color: ${transparentHeaderColor};
             padding: 8px 12px;
-            cursor: move;
+            cursor: grab;
             display: flex;
             justify-content: space-between;
             align-items: center;
