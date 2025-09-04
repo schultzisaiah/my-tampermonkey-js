@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.0.4
-// @description  try to take over the world!
-// @author       Isaiah Schultz
+// @version      1.1
+// @description   try to take over the world!
+// @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
 // @match        https://lawyers.findlaw.com/*
 // @match        https://lawyers-a.findlaw.com/*
@@ -381,6 +381,67 @@
             document.body.appendChild(cfCacheWorkerTag);
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // LNA/FLAN Ad Revealer //////////////////////////////////////////////////////////////////////////////////
+        const flanAds = document.querySelectorAll('[data-product-code="flan"]');
+
+        if (flanAds.length > 0) {
+            // 1. Create a style element for the highlight effect
+            const style = document.createElement('style');
+            style.textContent = `
+                .lna-ad-highlight {
+                    box-shadow: 0 0 12px 4px rgba(255, 223, 0, 0.85) !important;
+                    border: 2px solid #FFBF00 !important;
+                    transition: box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // 2. Create the reveal button
+            const revealButton = document.createElement('button');
+            revealButton.id = 'reveal-lna-btn';
+            revealButton.textContent = 'Reveal LNA Ads';
+            revealButton.style.cssText = `
+                position: fixed;
+                left: 5%;
+                top: 1%; /* same starting point as build number element */
+                transform: translateY(50px); /* move below the build number element */
+                z-index: 9998;
+                padding: 6px 12px;
+                background-color: rgba(0, 93, 162, 0.7); /* Blue */
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                border-radius: 6px;
+                cursor: pointer;
+                font-family: sans-serif;
+                font-size: x-small;
+                font-weight: bold;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                backdrop-filter: blur(8px);
+                transition: background-color 0.2s;
+            `;
+            document.body.appendChild(revealButton);
+
+            // 3. Add toggle functionality to the button
+            let isRevealed = false;
+            revealButton.addEventListener('click', () => {
+                isRevealed = !isRevealed; // Toggle the state
+
+                flanAds.forEach(ad => {
+                    ad.classList.toggle('lna-ad-highlight');
+                });
+
+                if (isRevealed) {
+                    revealButton.textContent = 'Hide LNA Ads';
+                    revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
+                } else {
+                    revealButton.textContent = 'Reveal LNA Ads';
+                    revealButton.style.backgroundColor = 'rgba(0, 93, 162, 0.7)'; // Back to blue
+                }
+            });
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
         // Shortcut to disable env indicator //////////////////////////////////////////////////////////////////
         var envInd = document.getElementById('acs-commons-env-indicator');
