@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.1
+// @version      1.1.1
 // @description   try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -164,6 +164,12 @@
 
                 buildNumContainer.style.left = newX + 'px';
                 buildNumContainer.style.top = newY + 'px';
+
+                const revealButton = document.getElementById('reveal-lna-btn');
+                if (revealButton) {
+                    revealButton.style.left = newX + 'px';
+                    revealButton.style.top = newY + 'px';
+                }
             }
         });
 
@@ -177,6 +183,12 @@
         buildNumContainer.addEventListener('dblclick', () => {
             buildNumContainer.style.left = initialBuildNumLeft;
             buildNumContainer.style.top = initialBuildNumTop;
+
+            const revealButton = document.getElementById('reveal-lna-btn');
+            if (revealButton) {
+                revealButton.style.left = initialBuildNumLeft;
+                revealButton.style.top = initialBuildNumTop;
+            }
         });
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -400,11 +412,11 @@
             // 2. Create the reveal button
             const revealButton = document.createElement('button');
             revealButton.id = 'reveal-lna-btn';
-            revealButton.textContent = 'Reveal LNA Ads';
+            revealButton.textContent = 'Reveal LNA';
             revealButton.style.cssText = `
                 position: fixed;
-                left: 5%;
-                top: 1%; /* same starting point as build number element */
+                left: ${initialBuildNumLeft};
+                top: ${initialBuildNumTop};
                 transform: translateY(50px); /* move below the build number element */
                 z-index: 9998;
                 padding: 6px 12px;
@@ -432,10 +444,10 @@
                 });
 
                 if (isRevealed) {
-                    revealButton.textContent = 'Hide LNA Ads';
+                    revealButton.textContent = 'Hide LNA';
                     revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
                 } else {
-                    revealButton.textContent = 'Reveal LNA Ads';
+                    revealButton.textContent = 'Reveal LNA';
                     revealButton.style.backgroundColor = 'rgba(0, 93, 162, 0.7)'; // Back to blue
                 }
             });
