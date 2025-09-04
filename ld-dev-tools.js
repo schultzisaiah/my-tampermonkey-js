@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.1.2
+// @version      1.1.3
 // @description   try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -239,14 +239,16 @@
         // Main container for the data layer display
         var dataLayerContainer = document.createElement('div');
         dataLayerContainer.id = 'draggable-data-layer';
+        const initialDataLayerRight = '1%';
+        const initialDataLayerTop = '0.6%';
         dataLayerContainer.style.cssText = `
             position: fixed;
-            left: 86%;
-            top: 0.6%;
+            right: ${initialDataLayerRight};
+            top: ${initialDataLayerTop};
             z-index: 10000;
             display: flex;
             flex-direction: column;
-            width: 10%;
+            width: 225px;
             max-height: 97%;
             font-family: monospace;
             border-radius: 8px;
@@ -336,6 +338,7 @@
                 newX = Math.max(0, Math.min(newX, maxX));
                 newY = Math.max(0, Math.min(newY, maxY));
 
+                dataLayerContainer.style.right = ''; // Remove right positioning when dragging
                 dataLayerContainer.style.left = newX + 'px';
                 dataLayerContainer.style.top = newY + 'px';
             }
@@ -366,8 +369,9 @@
 
         // Add double-click to reset position functionality
         header.addEventListener('dblclick', () => {
-            dataLayerContainer.style.left = '86%';
-            dataLayerContainer.style.top = '0.6%';
+            dataLayerContainer.style.left = '';
+            dataLayerContainer.style.right = initialDataLayerRight;
+            dataLayerContainer.style.top = initialDataLayerTop;
         });
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -463,10 +467,10 @@
                     });
 
                     if (isRevealed) {
-                        revealButton.textContent = 'Hide LNA Ads';
+                        revealButton.textContent = 'Hide LNA';
                         revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
                     } else {
-                        revealButton.textContent = 'Reveal LNA Ads';
+                        revealButton.textContent = 'Reveal LNA';
                         revealButton.style.backgroundColor = 'rgba(0, 93, 162, 0.7)'; // Back to blue
                     }
                 });
@@ -524,3 +528,4 @@
         document.body.appendChild(errorDiv);
     }
 })();
+
