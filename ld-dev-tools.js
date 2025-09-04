@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.1.3
+// @version      1.1.4
 // @description   try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -266,11 +266,11 @@
             justify-content: space-between;
             align-items: center;
             border-radius: 8px 8px 0 0;
-            font-size: 1.2rem;
+            font-size: 0.8rem;
             font-weight: bold;
             color: black;
         `;
-        header.innerHTML = 'Data Layer';
+        header.innerHTML = 'DataLayer';
 
         // Minimize button
         var minimizeBtn = document.createElement('button');
@@ -421,7 +421,7 @@
                 // 2. Create the reveal button
                 const revealButton = document.createElement('button');
                 revealButton.id = 'reveal-lna-btn';
-                revealButton.textContent = 'Reveal LNA';
+                revealButton.textContent = '◻️　Reveal LNA';
 
                 const buildNumContainer = document.getElementById('draggable-build-num');
                 let buttonLeft, buttonTop;
@@ -467,10 +467,10 @@
                     });
 
                     if (isRevealed) {
-                        revealButton.textContent = 'Hide LNA';
+                        revealButton.textContent = '✅　Reveal LNA';
                         revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
                     } else {
-                        revealButton.textContent = 'Reveal LNA';
+                        revealButton.textContent = '◻️　Reveal LNA';
                         revealButton.style.backgroundColor = 'rgba(0, 93, 162, 0.7)'; // Back to blue
                     }
                 });
