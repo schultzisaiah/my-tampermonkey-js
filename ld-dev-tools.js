@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.0
+// @version      1.0.1
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -343,7 +343,7 @@
                 dataLayerContainer.style.height = 'auto'; // Let height be determined by content again
             } else {
                 // Minimize
-                minimizeBtn.textContent = '☐';
+                minimizeBtn.textContent = '+';
                 dataLayerContent.style.display = 'none';
                 dataLayerContainer.style.height = '48px'; // A fixed height for the header
             }
