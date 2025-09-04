@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.0.2
+// @version      1.0.3
 // @description  try to take over the world!
 // @author       Isaiah Schultz
 // @run-at       document-idle
@@ -215,7 +215,7 @@
         if (typeof FlagsFLFE !== 'undefined') {
             dataLayerText += '\nFlagsFLFE = ' + JSON.stringify(FlagsFLFE, null, 1) + ';';
         }
-        
+
         // Define transparent colors
         var transparentHeaderColor = 'rgba(34, 197, 94, 0.6)';
         var transparentDataLayerBgColor = 'rgba(240, 253, 244, 0.6)';
@@ -308,7 +308,7 @@
                 y: e.clientY - dataLayerContainer.offsetTop
             };
             document.body.style.userSelect = 'none'; // Prevents text selection during drag
-            buildNumDragHandle.style.cursor = 'grabbing';
+            header.style.cursor = 'grabbing';
             e.preventDefault();
         });
 
@@ -332,7 +332,7 @@
         document.addEventListener('mouseup', () => {
             isDragging = false;
             document.body.style.userSelect = 'auto'; // Re-enable text selection
-            buildNumDragHandle.style.cursor = 'grab';
+            header.style.cursor = 'grab';
         });
 
         // Add minimize/maximize functionality
