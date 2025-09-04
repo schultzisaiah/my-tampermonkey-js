@@ -59,7 +59,7 @@
             buildNumTxt = BuildNumber;
         }
 
-        var buildNumBgColor = 'rgba(255, 255, 255, 0.9)';
+        var buildNumBgColor = 'rgba(255, 255, 255, 0.6)';
         var textColor = 'black';
         var environment = 'unknown';
 
@@ -70,18 +70,18 @@
 
         switch(environment) {
             case 'prod':
-                buildNumBgColor = '#ef4444'; // Red
+                buildNumBgColor = 'rgba(239, 68, 68, 0.6)'; // Red
                 textColor = 'white';
                 break;
             case 'stage':
-                buildNumBgColor = '#fcd34d'; // Amber
+                buildNumBgColor = 'rgba(252, 211, 77, 0.6)'; // Amber
                 textColor = 'black';
                 break;
             case 'qa':
             case 'ci':
             case 'dev':
             case 'local':
-                buildNumBgColor = '#d1d5db'; // Gray
+                buildNumBgColor = 'rgba(209, 213, 219, 0.6)'; // Gray
                 textColor = 'black';
                 break;
             default:
@@ -107,6 +107,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             font-family: monospace;
+            backdrop-filter: blur(8px);
         `;
 
         // Build Number Drag Handle
@@ -214,27 +215,81 @@
         if (typeof FlagsFLFE !== 'undefined') {
             dataLayerText += '\nFlagsFLFE = ' + JSON.stringify(FlagsFLFE, null, 1) + ';';
         }
+        
+        // Define transparent colors
+        var transparentHeaderColor = 'rgba(34, 197, 94, 0.6)';
+        var transparentDataLayerBgColor = 'rgba(240, 253, 244, 0.6)';
+        if (hostVal && hostVal.includes("localhost")) {
+            transparentHeaderColor = 'rgba(234, 179, 8, 0.6)';
+            transparentDataLayerBgColor = 'rgba(255, 251, 235, 0.6)';
+        }
 
         // Main container for the data layer display
         var dataLayerContainer = document.createElement('div');
         dataLayerContainer.id = 'draggable-data-layer';
-        dataLayerContainer.style.cssText = 'position: fixed; left: 86%; top: 0.6%; z-index: 10000; display: flex; flex-direction: column; width: 10%; max-height: 97%; opacity: 1; font-family: monospace; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);';
+        dataLayerContainer.style.cssText = `
+            position: fixed;
+            left: 86%;
+            top: 0.6%;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            width: 10%;
+            max-height: 97%;
+            font-family: monospace;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(8px);
+        `;
 
         // Header for the drag handle and minimize button
         var header = document.createElement('div');
-        header.style.cssText = 'background-color: ' + headerColor + '; padding: 8px 12px; cursor: move; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; font-size: 1.2rem; font-weight: bold; color: black;';
+        header.style.cssText = `
+            background-color: ${transparentHeaderColor};
+            padding: 8px 12px;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px 8px 0 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: black;
+        `;
         header.innerHTML = 'Data Layer';
 
         // Minimize button
         var minimizeBtn = document.createElement('button');
         minimizeBtn.textContent = '–';
-        minimizeBtn.style.cssText = 'background: none; border: none; color: black; font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 4px; transition: transform 0.2s ease-in-out;';
+        minimizeBtn.style.cssText = `
+            background: none;
+            border: none;
+            color: black;
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 4px;
+            transition: transform 0.2s ease-in-out;
+        `;
         header.appendChild(minimizeBtn);
         dataLayerContainer.appendChild(header);
 
         // Content area for the data layer text
         var dataLayerContent = document.createElement('pre');
-        dataLayerContent.style.cssText = 'flex-grow: 1; margin: 0; padding: 12px; background-color: ' + dataLayerBgColor + '; font-size: x-small; overflow: auto; line-height: normal; user-select: text; word-wrap: normal; white-space: pre; color: black; border-radius: 0 0 8px 8px;';
+        dataLayerContent.style.cssText = `
+            flex-grow: 1;
+            margin: 0;
+            padding: 12px;
+            background-color: ${transparentDataLayerBgColor};
+            font-size: x-small;
+            overflow: auto;
+            line-height: normal;
+            user-select: text;
+            word-wrap: normal;
+            white-space: pre;
+            color: black;
+            border-radius: 0 0 8px 8px;
+        `;
         dataLayerContent.textContent = dataLayerText;
         dataLayerContainer.appendChild(dataLayerContent);
         document.body.appendChild(dataLayerContainer);
@@ -307,7 +362,19 @@
         var srpDiv = document.getElementById('serp_results');
         if (srpDiv !== 'undefined' && srpDiv !== null && srpDiv.innerHTML !== null && String(srpDiv.innerHTML).includes('small-order-')) {
             var cfCacheWorkerTag = document.createElement('div');
-            cfCacheWorkerTag.style.cssText = 'position: fixed; left: 5%; top: 6%; padding: 8px 12px; color: black; font-size: x-small; background-color: #fdba74; z-index: 9999; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+            cfCacheWorkerTag.style.cssText = `
+                position: fixed;
+                left: 5%;
+                top: 6%;
+                padding: 8px 12px;
+                color: black;
+                font-size: x-small;
+                background-color: rgba(253, 186, 116, 0.6);
+                z-index: 9999;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                backdrop-filter: blur(8px);
+            `;
             cfCacheWorkerTag.appendChild(document.createTextNode('CF SRP cache worker ran!'));
             document.body.appendChild(cfCacheWorkerTag);
         }
@@ -321,7 +388,21 @@
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
     } catch (err) {
         var errorDiv = document.createElement('pre');
-        errorDiv.style.cssText = 'position: fixed; left: 1%; bottom: 1%; padding: 12px; color: black; background-color: #fca5a5; width: 98%; font-size: small; font-weight: bolder; z-index: 10001; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);';
+        errorDiv.style.cssText = `
+            position: fixed;
+            left: 1%;
+            bottom: 1%;
+            padding: 12px;
+            color: black;
+            background-color: rgba(252, 165, 165, 0.6);
+            width: 98%;
+            font-size: small;
+            font-weight: bolder;
+            z-index: 10001;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            backdrop-filter: blur(8px);
+        `;
         errorDiv.appendChild(document.createTextNode('LD DEV TOOLS ERROR:\n' + err));
         document.body.appendChild(errorDiv);
     }
