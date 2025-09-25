@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.1.4
-// @description   try to take over the world!
+// @version      1.2.0
+// @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
 // @match        https://lawyers.findlaw.com/*
@@ -165,10 +165,16 @@
                 buildNumContainer.style.left = newX + 'px';
                 buildNumContainer.style.top = newY + 'px';
 
-                const revealButton = document.getElementById('reveal-lna-btn');
-                if (revealButton) {
-                    revealButton.style.left = newX + 'px';
-                    revealButton.style.top = newY + 'px';
+                // Move other buttons along with the build number
+                const revealLnaButton = document.getElementById('reveal-lna-btn');
+                if (revealLnaButton) {
+                    revealLnaButton.style.left = newX + 'px';
+                    revealLnaButton.style.top = newY + 'px';
+                }
+                const revealSubIdButton = document.getElementById('reveal-sub-id-btn');
+                if (revealSubIdButton) {
+                    revealSubIdButton.style.left = newX + 'px';
+                    revealSubIdButton.style.top = newY + 'px';
                 }
             }
         });
@@ -184,10 +190,15 @@
             buildNumContainer.style.left = initialBuildNumLeft;
             buildNumContainer.style.top = initialBuildNumTop;
 
-            const revealButton = document.getElementById('reveal-lna-btn');
-            if (revealButton) {
-                revealButton.style.left = initialBuildNumLeft;
-                revealButton.style.top = initialBuildNumTop;
+            const revealLnaButton = document.getElementById('reveal-lna-btn');
+            if (revealLnaButton) {
+                revealLnaButton.style.left = initialBuildNumLeft;
+                revealLnaButton.style.top = initialBuildNumTop;
+            }
+            const revealSubIdButton = document.getElementById('reveal-sub-id-btn');
+            if (revealSubIdButton) {
+                revealSubIdButton.style.left = initialBuildNumLeft;
+                revealSubIdButton.style.top = initialBuildNumTop;
             }
         });
 
@@ -439,7 +450,7 @@
                     position: fixed;
                     left: ${buttonLeft};
                     top: ${buttonTop};
-                    transform: translateY(50px); /* move below the build number element */
+                    transform: translateY(90px); /* move below the Sub ID button */
                     z-index: 9998;
                     padding: 6px 12px;
                     background-color: rgba(0, 93, 162, 0.7); /* Blue */
@@ -500,6 +511,140 @@
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        // Sub ID Revealer /////////////////////////////////////////////////////////////////////////////////
+        function initSubIdRevealer() {
+            // 1. Check if already initialized
+            if (document.getElementById('reveal-sub-id-btn')) {
+                return true;
+            }
+
+            // 2. Find ads with the data attribute
+            const subIdAds = document.querySelectorAll('[data-product-sub-id]');
+
+            if (subIdAds.length > 0) {
+                // 3. Create the button
+                const revealButton = document.createElement('button');
+                revealButton.id = 'reveal-sub-id-btn';
+                revealButton.textContent = '◻️　Reveal Sub IDs';
+
+                const buildNumContainer = document.getElementById('draggable-build-num');
+                let buttonLeft, buttonTop;
+
+                if (buildNumContainer) {
+                    buttonLeft = buildNumContainer.style.left;
+                    buttonTop = buildNumContainer.style.top;
+                } else {
+                    // Fallback
+                    buttonLeft = initialBuildNumLeft;
+                    buttonTop = initialBuildNumTop;
+                }
+
+                revealButton.style.cssText = `
+                    position: fixed;
+                    left: ${buttonLeft};
+                    top: ${buttonTop};
+                    transform: translateY(50px); /* move below the build number element */
+                    z-index: 9998;
+                    padding: 6px 12px;
+                    background-color: rgba(0, 93, 162, 0.7); /* Blue */
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.5);
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-family: sans-serif;
+                    font-size: x-small;
+                    font-weight: bold;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                    backdrop-filter: blur(8px);
+                    transition: background-color 0.2s;
+                `;
+                document.body.appendChild(revealButton);
+
+                // 4. Add click functionality
+                let isRevealed = false;
+                revealButton.addEventListener('click', () => {
+                    isRevealed = !isRevealed;
+
+                    document.querySelectorAll('[data-product-sub-id]').forEach(ad => {
+                        if (isRevealed) {
+                            // Prevent adding duplicate displays
+                            if (ad.querySelector('.sub-id-display')) return;
+
+                            const originalPosition = window.getComputedStyle(ad).position;
+                            if (originalPosition === 'static') {
+                                ad.style.position = 'relative';
+                                // Store original position to revert later
+                                ad.dataset.originalPosition = 'static';
+                            }
+
+                            const subId = ad.dataset.productSubId;
+                            const displayElement = document.createElement('div');
+                            displayElement.className = 'sub-id-display';
+                            displayElement.textContent = subId;
+                            displayElement.style.cssText = `
+                                position: absolute;
+                                top: 2px;
+                                right: 2px;
+                                background-color: rgba(250, 204, 21, 0.9); /* Yellow */
+                                color: black;
+                                padding: 2px 5px;
+                                font-family: monospace;
+                                font-size: 11px;
+                                font-weight: bold;
+                                border-radius: 4px;
+                                z-index: 1000;
+                                user-select: all;
+                                line-height: 1.2;
+                            `;
+                            ad.appendChild(displayElement);
+                        } else {
+                            // Remove the sub-id display
+                            const displayElement = ad.querySelector('.sub-id-display');
+                            if (displayElement) {
+                                displayElement.remove();
+                            }
+                            // Revert position if we changed it
+                            if (ad.dataset.originalPosition === 'static') {
+                                ad.style.position = 'static';
+                                delete ad.dataset.originalPosition;
+                            }
+                        }
+                    });
+
+                    // Update button state
+                    if (isRevealed) {
+                        revealButton.textContent = '✅　Reveal Sub IDs';
+                        revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
+                    } else {
+                        revealButton.textContent = '◻️　Reveal Sub IDs';
+                        revealButton.style.backgroundColor = 'rgba(0, 93, 162, 0.7)'; // Back to blue
+                    }
+                });
+                return true; // Success
+            }
+            return false; // Not found
+        }
+
+        // Try to initialize immediately. If it fails, observe for changes.
+        if (!initSubIdRevealer()) {
+            const observer = new MutationObserver((mutations, obs) => {
+                if (initSubIdRevealer()) {
+                    obs.disconnect(); // Once found, stop observing.
+                }
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            // Fallback to stop observing after 5 seconds.
+            setTimeout(() => {
+                observer.disconnect();
+            }, 5000);
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
         // Shortcut to disable env indicator //////////////////////////////////////////////////////////////////
         var envInd = document.getElementById('acs-commons-env-indicator');
@@ -528,4 +673,3 @@
         document.body.appendChild(errorDiv);
     }
 })();
-
