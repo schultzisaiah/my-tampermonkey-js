@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.2.0
+// @version      1.2.1
 // @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -34,6 +34,7 @@
 // @match        https://www.superlawyers.com/*
 // @match        https://attorneys.superlawyers.com/*
 // @match        https://profiles.superlawyers.com/*
+// @match        https://www.abogado.com/*
 // @match        https://www.abogado-stage.com/*
 // @match        https://www.abogado-qa.com/*
 // @match        https://www.superlawyers-qa.com/*
