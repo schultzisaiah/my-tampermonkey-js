@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.2.2
+// @version      1.2.3
 // @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -48,56 +48,57 @@
 // @noframes
 // ==/UserScript==
 
-(function() {
-    'use strict';
-    if (typeof dataLayer !== 'undefined' && dataLayer.ldDevTools === 'disable') {
-        return;
+(function () {
+  'use strict';
+  if (typeof dataLayer !== 'undefined' && dataLayer.ldDevTools === 'disable') {
+    return;
+  }
+  try {
+    // Build Number:///////////////////////////////////////////////////////////////////////////////////////
+    var buildNumTxt = 'Build: unknown';
+    if (typeof BuildNumber !== 'undefined') {
+      buildNumTxt = BuildNumber;
     }
-    try {
-        // Build Number:///////////////////////////////////////////////////////////////////////////////////////
-        var buildNumTxt = 'Build: unknown';
-        if (typeof BuildNumber !== 'undefined') {
-            buildNumTxt = BuildNumber;
-        }
 
-        var buildNumBgColor = 'rgba(255, 255, 255, 0.6)';
-        var textColor = 'black';
-        var environment = 'unknown';
+    var buildNumBgColor = 'rgba(255, 255, 255, 0.6)';
+    var textColor = 'black';
+    var environment = 'unknown';
 
-        const envMatch = buildNumTxt.match(/(local|dev|ci|qa|stage|prod)/i);
-        if (envMatch) {
-            environment = envMatch[1];
-        }
+    const envMatch = buildNumTxt.match(/(local|dev|ci|qa|stage|prod)/i);
+    if (envMatch) {
+      environment = envMatch[1];
+    }
 
-        switch(environment) {
-            case 'prod':
-                buildNumBgColor = 'rgba(200, 0, 0, 0.65)'; // Red
-                textColor = 'white';
-                break;
-            case 'stage':
-                buildNumBgColor = 'rgba(252, 211, 77, 0.6)'; // Amber
-                textColor = 'black';
-                break;
-            case 'qa':
-            case 'ci':
-            case 'dev':
-            case 'local':
-                buildNumBgColor = 'rgba(209, 213, 219, 0.6)'; // Gray
-                textColor = 'black';
-                break;
-            default:
-                // Keep default styling
-                break;
-        }
+    switch (environment) {
+      case 'prod':
+        buildNumBgColor = 'rgba(200, 0, 0, 0.65)'; // Red
+        textColor = 'white';
+        break;
+      case 'stage':
+        buildNumBgColor = 'rgba(252, 211, 77, 0.6)'; // Amber
+        textColor = 'black';
+        break;
+      case 'qa':
+      case 'ci':
+      case 'dev':
+      case 'local':
+        buildNumBgColor = 'rgba(209, 213, 219, 0.6)'; // Gray
+        textColor = 'black';
+        break;
+      default:
+        // Keep default styling
+        break;
+    }
 
-        const styledBuildTxt = buildNumTxt.replace(environment, `<b>${environment}</b>`);
+    const styledBuildTxt = buildNumTxt.replace(environment,
+        `<b>${environment}</b>`);
 
-        // Build Number Container
-        var buildNumContainer = document.createElement('div');
-        buildNumContainer.id = 'draggable-build-num';
-        const initialBuildNumLeft = '5%';
-        const initialBuildNumTop = '1%';
-        buildNumContainer.style.cssText = `
+    // Build Number Container
+    var buildNumContainer = document.createElement('div');
+    buildNumContainer.id = 'draggable-build-num';
+    const initialBuildNumLeft = '5%';
+    const initialBuildNumTop = '1%';
+    buildNumContainer.style.cssText = `
             position: fixed;
             left: ${initialBuildNumLeft};
             top: ${initialBuildNumTop};
@@ -111,21 +112,21 @@
             backdrop-filter: blur(8px);
         `;
 
-        // Build Number Drag Handle
-        var buildNumDragHandle = document.createElement('div');
-        buildNumDragHandle.style.cssText = `
+    // Build Number Drag Handle
+    var buildNumDragHandle = document.createElement('div');
+    buildNumDragHandle.style.cssText = `
             cursor: grab;
             padding: 8px;
             color: ${textColor};
             font-size: 1.2em;
             transform: translateY(-2px); /* Correct the vertical alignment */
         `;
-        buildNumDragHandle.innerHTML = `☰`;
-        buildNumContainer.appendChild(buildNumDragHandle);
+    buildNumDragHandle.innerHTML = `☰`;
+    buildNumContainer.appendChild(buildNumDragHandle);
 
-        // Build Number Text
-        var buildNumDiv = document.createElement('pre');
-        buildNumDiv.style.cssText = `
+    // Build Number Text
+    var buildNumDiv = document.createElement('pre');
+    buildNumDiv.style.cssText = `
             padding: 8px 12px 8px 0px;
             color: ${textColor};
             font-size: x-small;
@@ -133,127 +134,132 @@
             margin: 0;
             user-select: text;
         `;
-        buildNumDiv.innerHTML = styledBuildTxt;
-        buildNumContainer.appendChild(buildNumDiv);
-        document.body.appendChild(buildNumContainer);
+    buildNumDiv.innerHTML = styledBuildTxt;
+    buildNumContainer.appendChild(buildNumDiv);
+    document.body.appendChild(buildNumContainer);
 
-        // Add drag and drop functionality for Build Number
-        let isDraggingBuildNum = false;
-        let offsetBuildNum = { x: 0, y: 0 };
+    // Add drag and drop functionality for Build Number
+    let isDraggingBuildNum = false;
+    let offsetBuildNum = {x: 0, y: 0};
 
-        buildNumDragHandle.addEventListener('mousedown', (e) => {
-            isDraggingBuildNum = true;
-            offsetBuildNum = {
-                x: e.clientX - buildNumContainer.offsetLeft,
-                y: e.clientY - buildNumContainer.offsetTop
-            };
-            document.body.style.userSelect = 'none';
-            buildNumDragHandle.style.cursor = 'grabbing';
-            e.preventDefault();
-        });
+    buildNumDragHandle.addEventListener('mousedown', (e) => {
+      isDraggingBuildNum = true;
+      offsetBuildNum = {
+        x: e.clientX - buildNumContainer.offsetLeft,
+        y: e.clientY - buildNumContainer.offsetTop
+      };
+      document.body.style.userSelect = 'none';
+      buildNumDragHandle.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
 
-        document.addEventListener('mousemove', (e) => {
-            if (isDraggingBuildNum) {
-                let newX = e.clientX - offsetBuildNum.x;
-                let newY = e.clientY - offsetBuildNum.y;
+    document.addEventListener('mousemove', (e) => {
+      if (isDraggingBuildNum) {
+        let newX = e.clientX - offsetBuildNum.x;
+        let newY = e.clientY - offsetBuildNum.y;
 
-                const maxX = window.innerWidth - buildNumContainer.offsetWidth;
-                const maxY = window.innerHeight - buildNumContainer.offsetHeight;
+        const maxX = window.innerWidth - buildNumContainer.offsetWidth;
+        const maxY = window.innerHeight - buildNumContainer.offsetHeight;
 
-                newX = Math.max(0, Math.min(newX, maxX));
-                newY = Math.max(0, Math.min(newY, maxY));
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
 
-                buildNumContainer.style.left = newX + 'px';
-                buildNumContainer.style.top = newY + 'px';
+        buildNumContainer.style.left = newX + 'px';
+        buildNumContainer.style.top = newY + 'px';
 
-                // Move other buttons along with the build number
-                const revealLnaButton = document.getElementById('reveal-lna-btn');
-                if (revealLnaButton) {
-                    revealLnaButton.style.left = newX + 'px';
-                    revealLnaButton.style.top = newY + 'px';
-                }
-                const revealSubIdButton = document.getElementById('reveal-sub-id-btn');
-                if (revealSubIdButton) {
-                    revealSubIdButton.style.left = newX + 'px';
-                    revealSubIdButton.style.top = newY + 'px';
-                }
-            }
-        });
+        // Move other buttons along with the build number
+        const revealLnaButton = document.getElementById('reveal-lna-btn');
+        if (revealLnaButton) {
+          revealLnaButton.style.left = newX + 'px';
+          revealLnaButton.style.top = newY + 'px';
+        }
+        const revealSubIdButton = document.getElementById('reveal-sub-id-btn');
+        if (revealSubIdButton) {
+          revealSubIdButton.style.left = newX + 'px';
+          revealSubIdButton.style.top = newY + 'px';
+        }
+      }
+    });
 
-        document.addEventListener('mouseup', () => {
-            isDraggingBuildNum = false;
-            document.body.style.userSelect = 'auto';
-            buildNumDragHandle.style.cursor = 'grab';
-        });
+    document.addEventListener('mouseup', () => {
+      isDraggingBuildNum = false;
+      document.body.style.userSelect = 'auto';
+      buildNumDragHandle.style.cursor = 'grab';
+    });
 
-        // Add double-click to reset position for Build Number
-        buildNumContainer.addEventListener('dblclick', () => {
-            buildNumContainer.style.left = initialBuildNumLeft;
-            buildNumContainer.style.top = initialBuildNumTop;
+    // Add double-click to reset position for Build Number
+    buildNumContainer.addEventListener('dblclick', () => {
+      buildNumContainer.style.left = initialBuildNumLeft;
+      buildNumContainer.style.top = initialBuildNumTop;
 
-            const revealLnaButton = document.getElementById('reveal-lna-btn');
-            if (revealLnaButton) {
-                revealLnaButton.style.left = initialBuildNumLeft;
-                revealLnaButton.style.top = initialBuildNumTop;
-            }
-            const revealSubIdButton = document.getElementById('reveal-sub-id-btn');
-            if (revealSubIdButton) {
-                revealSubIdButton.style.left = initialBuildNumLeft;
-                revealSubIdButton.style.top = initialBuildNumTop;
-            }
-        });
+      const revealLnaButton = document.getElementById('reveal-lna-btn');
+      if (revealLnaButton) {
+        revealLnaButton.style.left = initialBuildNumLeft;
+        revealLnaButton.style.top = initialBuildNumTop;
+      }
+      const revealSubIdButton = document.getElementById('reveal-sub-id-btn');
+      if (revealSubIdButton) {
+        revealSubIdButton.style.left = initialBuildNumLeft;
+        revealSubIdButton.style.top = initialBuildNumTop;
+      }
+    });
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // DATA LAYER DISPLAY://///////////////////////////////////////////////////////////////////////////////
-        var headerColor = "#22c55e"; // default green
-        var dataLayerBgColor = "#f0fdf4";
+    // DATA LAYER DISPLAY://///////////////////////////////////////////////////////////////////////////////
+    var headerColor = "#22c55e"; // default green
+    var dataLayerBgColor = "#f0fdf4";
+    try {
+      var hostVal = FL.local.hosts.lawyers
+      if (hostVal.includes("localhost")) {
+        headerColor = "#eab308"; // yellow
+        dataLayerBgColor = "#fffbeb";
+      }
+    } catch (err) {
+      // oh well
+    }
+
+    var dataLayerText = 'FLDataLayer = ' + JSON.stringify(FLDataLayer, null, 1)
+        + ';';
+    if (typeof FL !== 'undefined') {
+      dataLayerText += '\nFL = ' + JSON.stringify(FL, null, 1) + ';';
+    }
+    if (typeof FLDataLayer.workers_data === 'undefined') {
+      if (typeof document.getElementById('workers_data') !== 'undefined') {
+        var workersDataValue = 'NOT ON PAGE';
         try {
-            var hostVal = FL.local.hosts.lawyers
-            if (hostVal.includes("localhost")) {
-                headerColor = "#eab308"; // yellow
-                dataLayerBgColor = "#fffbeb";
-            }
+          var workersData = document.getElementById(
+              'workers_data').textContent.replace(/\n/g, '').replace(/\"/g,
+              '"').replace("flan:", "\"flan\":").trim();
+          workersDataValue = JSON.stringify(JSON.parse(workersData), null, 1)
+              + ';';
         } catch (err) {
-            // oh well
+          workersDataValue = 'ERROR: ' + err;
         }
+        dataLayerText += '\nworkers_data = ' + workersDataValue;
+      }
+    } else {
+      dataLayerText += '\nworkers_data = (in FLDataLayer)';
+    }
+    if (typeof FlagsFLFE !== 'undefined') {
+      dataLayerText += '\nFlagsFLFE = ' + JSON.stringify(FlagsFLFE, null, 1)
+          + ';';
+    }
 
-        var dataLayerText = 'FLDataLayer = ' + JSON.stringify(FLDataLayer, null, 1) + ';';
-        if (typeof FL !== 'undefined') {
-            dataLayerText += '\nFL = ' + JSON.stringify(FL, null, 1) + ';';
-        }
-        if (typeof FLDataLayer.workers_data === 'undefined') {
-            if (typeof document.getElementById('workers_data') !== 'undefined') {
-                var workersDataValue = 'NOT ON PAGE';
-                try {
-                    var workersData = document.getElementById('workers_data').textContent.replace(/\n/g, '').replace(/\"/g, '"').replace("flan:", "\"flan\":").trim();
-                    workersDataValue = JSON.stringify(JSON.parse(workersData), null, 1) + ';';
-                } catch (err) {
-                    workersDataValue = 'ERROR: ' + err;
-                }
-                dataLayerText += '\nworkers_data = ' + workersDataValue;
-            }
-        } else {
-            dataLayerText += '\nworkers_data = (in FLDataLayer)';
-        }
-        if (typeof FlagsFLFE !== 'undefined') {
-            dataLayerText += '\nFlagsFLFE = ' + JSON.stringify(FlagsFLFE, null, 1) + ';';
-        }
+    // Define transparent colors
+    var transparentHeaderColor = 'rgba(34, 197, 94, 0.6)';
+    var transparentDataLayerBgColor = 'rgba(240, 253, 244, 0.6)';
+    if (hostVal && hostVal.includes("localhost")) {
+      transparentHeaderColor = 'rgba(234, 179, 8, 0.6)';
+      transparentDataLayerBgColor = 'rgba(255, 251, 235, 0.6)';
+    }
 
-        // Define transparent colors
-        var transparentHeaderColor = 'rgba(34, 197, 94, 0.6)';
-        var transparentDataLayerBgColor = 'rgba(240, 253, 244, 0.6)';
-        if (hostVal && hostVal.includes("localhost")) {
-            transparentHeaderColor = 'rgba(234, 179, 8, 0.6)';
-            transparentDataLayerBgColor = 'rgba(255, 251, 235, 0.6)';
-        }
-
-        // Main container for the data layer display
-        var dataLayerContainer = document.createElement('div');
-        dataLayerContainer.id = 'draggable-data-layer';
-        const initialDataLayerRight = '1%';
-        const initialDataLayerTop = '0.6%';
-        dataLayerContainer.style.cssText = `
+    // Main container for the data layer display
+    var dataLayerContainer = document.createElement('div');
+    dataLayerContainer.id = 'draggable-data-layer';
+    const initialDataLayerRight = '1%';
+    const initialDataLayerTop = '0.6%';
+    dataLayerContainer.style.cssText = `
             position: fixed;
             right: ${initialDataLayerRight};
             top: ${initialDataLayerTop};
@@ -268,9 +274,9 @@
             backdrop-filter: blur(8px);
         `;
 
-        // Header for the drag handle and minimize button
-        var header = document.createElement('div');
-        header.style.cssText = `
+    // Header for the drag handle and minimize button
+    var header = document.createElement('div');
+    header.style.cssText = `
             background-color: ${transparentHeaderColor};
             padding: 8px 12px;
             cursor: grab;
@@ -282,19 +288,19 @@
             font-weight: bold;
             color: black;
         `;
-        
-        var headerTitle = document.createElement('span');
-        headerTitle.textContent = 'DataLayer';
-        header.appendChild(headerTitle);
 
-        // Container for buttons
-        var buttonContainer = document.createElement('div');
-        buttonContainer.style.cssText = 'display: flex; align-items: center;';
-        header.appendChild(buttonContainer);
+    var headerTitle = document.createElement('span');
+    headerTitle.textContent = 'DataLayer';
+    header.appendChild(headerTitle);
 
-        var apiBtn = document.createElement('button');
-        apiBtn.textContent = 'API';
-        apiBtn.style.cssText = `
+    // Container for buttons
+    var buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = 'display: flex; align-items: center;';
+    header.appendChild(buttonContainer);
+
+    var apiBtn = document.createElement('button');
+    apiBtn.textContent = 'API';
+    apiBtn.style.cssText = `
             background: rgba(0, 0, 0, 0.08); /* Light bg */
             border: 1px solid rgba(0, 0, 0, 0.15); /* Subtle border */
             border-radius: 4px; /* Rounded corners */
@@ -307,28 +313,63 @@
             margin-right: 6px; /* Space it from minimize btn */
             transition: background-color 0.2s;
         `;
-        apiBtn.title = 'Open model/json endpoint'; // Add a tooltip
+    apiBtn.title = 'Open model/json endpoint'; // Add a tooltip
 
-        // Add hover effect
-        apiBtn.addEventListener('mouseenter', () => {
-            apiBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.15)';
-        });
-        apiBtn.addEventListener('mouseleave', () => {
-            apiBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.08)';
-        });
+    // Add hover effect
+    apiBtn.addEventListener('mouseenter', () => {
+      apiBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.15)';
+    });
+    apiBtn.addEventListener('mouseleave', () => {
+      apiBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.08)';
+    });
 
-        apiBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent drag from starting
-            const newUrl = window.location.origin + '/frontend/v2/model' + window.location.pathname;
-            window.open(newUrl, '_blank');
-        });
-        buttonContainer.appendChild(apiBtn);
+    apiBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent drag from starting
 
+      // Check for and remove existing widget
+      const existingWidget = document.getElementById('api-model-widget');
+      if (existingWidget) {
+        existingWidget.remove();
+      }
 
-        // Minimize button
-        var minimizeBtn = document.createElement('button');
-        minimizeBtn.textContent = '–';
-        minimizeBtn.style.cssText = `
+      const apiUrl = window.location.origin + '/frontend/v2/model'
+          + window.location.pathname;
+      const apiBtnRef = apiBtn;
+      apiBtnRef.textContent = '...'; // Loading state
+
+      GM_xmlhttpRequest({
+        method: "GET",
+        url: apiUrl,
+        onload: function (response) {
+          apiBtnRef.textContent = 'API'; // Restore button text
+          let content = '';
+          let title = 'API Model';
+          try {
+            const jsonData = JSON.parse(response.responseText);
+            content = JSON.stringify(jsonData, null, 2); // Pretty print
+          } catch (err) {
+            title = 'API Model (Parse Error)';
+            content = 'Error parsing JSON:\n' + err + '\n\n'
+                + response.responseText;
+          }
+          createDraggableWidget('api-model-widget', title, content, '25%', '5%',
+              350);
+        },
+        onerror: function (error) {
+          apiBtnRef.textContent = 'API'; // Restore button text
+          const errorContent = 'Error fetching data:\n' + JSON.stringify(error,
+              null, 2);
+          createDraggableWidget('api-model-widget', 'API Model (Fetch Error)',
+              errorContent, '25%', '5%', 350);
+        }
+      });
+    });
+    buttonContainer.appendChild(apiBtn);
+
+    // Minimize button
+    var minimizeBtn = document.createElement('button');
+    minimizeBtn.textContent = '–';
+    minimizeBtn.style.cssText = `
             background: none;
             border: none;
             color: black;
@@ -338,12 +379,12 @@
             padding: 4px;
             transition: transform 0.2s ease-in-out;
         `;
-        buttonContainer.appendChild(minimizeBtn);
-        dataLayerContainer.appendChild(header);
+    buttonContainer.appendChild(minimizeBtn);
+    dataLayerContainer.appendChild(header);
 
-        // Content area for the data layer text
-        var dataLayerContent = document.createElement('pre');
-        dataLayerContent.style.cssText = `
+    // Content area for the data layer text
+    var dataLayerContent = document.createElement('pre');
+    dataLayerContent.style.cssText = `
             flex-grow: 1;
             margin: 0;
             padding: 12px;
@@ -357,84 +398,242 @@
             color: black;
             border-radius: 0 0 8px 8px;
         `;
-        dataLayerContent.textContent = dataLayerText;
-        dataLayerContainer.appendChild(dataLayerContent);
-        document.body.appendChild(dataLayerContainer);
+    dataLayerContent.textContent = dataLayerText;
+    dataLayerContainer.appendChild(dataLayerContent);
+    document.body.appendChild(dataLayerContainer);
 
-        // Add drag and drop functionality
-        let isDragging = false;
-        let offset = {
-            x: 0,
-            y: 0
+    // Add drag and drop functionality
+    let isDragging = false;
+    let offset = {
+      x: 0,
+      y: 0
+    };
+
+    header.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      offset = {
+        x: e.clientX - dataLayerContainer.offsetLeft,
+        y: e.clientY - dataLayerContainer.offsetTop
+      };
+      document.body.style.userSelect = 'none'; // Prevents text selection during drag
+      header.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        let newX = e.clientX - offset.x;
+        let newY = e.clientY - offset.y;
+
+        // Restrict movement to within the viewport
+        const maxX = window.innerWidth - dataLayerContainer.offsetWidth;
+        const maxY = window.innerHeight - header.offsetHeight; // Keep the header on-screen vertically
+
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+
+        dataLayerContainer.style.right = ''; // Remove right positioning when dragging
+        dataLayerContainer.style.left = newX + 'px';
+        dataLayerContainer.style.top = newY + 'px';
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      document.body.style.userSelect = 'auto'; // Re-enable text selection
+      header.style.cursor = 'grab';
+    });
+
+    // Add minimize/maximize functionality
+    let isMinimized = false;
+    minimizeBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent drag from starting
+      if (isMinimized) {
+        // Maximize
+        minimizeBtn.textContent = '–';
+        dataLayerContent.style.display = 'block';
+        dataLayerContainer.style.height = 'auto'; // Let height be determined by content again
+      } else {
+        // Minimize
+        minimizeBtn.textContent = '+';
+        dataLayerContent.style.display = 'none';
+        dataLayerContainer.style.height = '48px'; // A fixed height for the header
+      }
+      isMinimized = !isMinimized;
+    });
+
+    // Add double-click to reset position functionality
+    header.addEventListener('dblclick', () => {
+      dataLayerContainer.style.left = '';
+      dataLayerContainer.style.right = initialDataLayerRight;
+      dataLayerContainer.style.top = initialDataLayerTop;
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Draggable Widget Creator ///////////////////////////////////////////////////////////////////////////
+    function createDraggableWidget(id, title, content, initialLeft, initialTop,
+        width = 300) {
+      // Main container
+      var widgetContainer = document.createElement('div');
+      widgetContainer.id = id;
+      widgetContainer.style.cssText = `
+                position: fixed;
+                left: ${initialLeft};
+                top: ${initialTop};
+                z-index: 10001; /* On top of other widgets */
+                display: flex;
+                flex-direction: column;
+                width: ${width}px;
+                max-height: 90%;
+                font-family: monospace;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                backdrop-filter: blur(8px);
+                background-color: rgba(245, 245, 245, 0.6); /* Light bg */
+            `;
+
+      // Header
+      var header = document.createElement('div');
+      header.style.cssText = `
+                background-color: rgba(120, 120, 120, 0.6); /* Neutral header */
+                padding: 8px 12px;
+                cursor: grab;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-radius: 8px 8px 0 0;
+                font-size: 0.8rem;
+                font-weight: bold;
+                color: black;
+            `;
+
+      var headerTitle = document.createElement('span');
+      headerTitle.textContent = title;
+      header.appendChild(headerTitle);
+
+      // Button container
+      var buttonContainer = document.createElement('div');
+      buttonContainer.style.cssText = 'display: flex; align-items: center;';
+      header.appendChild(buttonContainer);
+
+      // Minimize button
+      var minimizeBtn = document.createElement('button');
+      minimizeBtn.textContent = '–';
+      minimizeBtn.style.cssText = `
+                background: none;
+                border: none;
+                color: black;
+                font-size: 1.5rem;
+                line-height: 1;
+                cursor: pointer;
+                padding: 4px;
+                transition: transform 0.2s ease-in-out;
+            `;
+      buttonContainer.appendChild(minimizeBtn);
+
+      // Close button
+      var closeBtn = document.createElement('button');
+      closeBtn.textContent = '×';
+      closeBtn.style.cssText = `
+                background: none;
+                border: none;
+                color: black;
+                font-size: 1.5rem; /* Match minimize */
+                line-height: 1;
+                cursor: pointer;
+                padding: 4px;
+                margin-left: 4px;
+            `;
+      buttonContainer.appendChild(closeBtn);
+      widgetContainer.appendChild(header);
+
+      // Content area
+      var widgetContent = document.createElement('pre');
+      widgetContent.style.cssText = `
+                flex-grow: 1;
+                margin: 0;
+                padding: 12px;
+                background-color: rgba(255, 255, 255, 0.6); /* Lighter content bg */
+                font-size: x-small;
+                overflow: auto;
+                line-height: normal;
+                user-select: text;
+                word-wrap: normal;
+                white-space: pre;
+                color: black;
+                border-radius: 0 0 8px 8px;
+            `;
+      widgetContent.textContent = content;
+      widgetContainer.appendChild(widgetContent);
+      document.body.appendChild(widgetContainer);
+
+      // Drag and drop
+      let isDragging = false;
+      let offset = {x: 0, y: 0};
+
+      header.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offset = {
+          x: e.clientX - widgetContainer.offsetLeft,
+          y: e.clientY - widgetContainer.offsetTop
         };
+        document.body.style.userSelect = 'none';
+        header.style.cursor = 'grabbing';
+        e.preventDefault();
+      });
 
-        header.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            offset = {
-                x: e.clientX - dataLayerContainer.offsetLeft,
-                y: e.clientY - dataLayerContainer.offsetTop
-            };
-            document.body.style.userSelect = 'none'; // Prevents text selection during drag
-            header.style.cursor = 'grabbing';
-            e.preventDefault();
-        });
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          let newX = e.clientX - offset.x;
+          let newY = e.clientY - offset.y;
+          const maxX = window.innerWidth - widgetContainer.offsetWidth;
+          const maxY = window.innerHeight - header.offsetHeight;
+          newX = Math.max(0, Math.min(newX, maxX));
+          newY = Math.max(0, Math.min(newY, maxY));
+          widgetContainer.style.right = '';
+          widgetContainer.style.left = newX + 'px';
+          widgetContainer.style.top = newY + 'px';
+        }
+      });
 
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                let newX = e.clientX - offset.x;
-                let newY = e.clientY - offset.y;
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+        document.body.style.userSelect = 'auto';
+        header.style.cursor = 'grab';
+      });
 
-                // Restrict movement to within the viewport
-                const maxX = window.innerWidth - dataLayerContainer.offsetWidth;
-                const maxY = window.innerHeight - header.offsetHeight; // Keep the header on-screen vertically
+      // Minimize/maximize
+      let isMinimized = false;
+      minimizeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isMinimized) {
+          minimizeBtn.textContent = '–';
+          widgetContent.style.display = 'block';
+          widgetContainer.style.height = 'auto';
+        } else {
+          minimizeBtn.textContent = '+';
+          widgetContent.style.display = 'none';
+          widgetContainer.style.height = '48px'; // Adjust to header height
+        }
+        isMinimized = !isMinimized;
+      });
 
-                newX = Math.max(0, Math.min(newX, maxX));
-                newY = Math.max(0, Math.min(newY, maxY));
+      // Close
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        widgetContainer.remove();
+      });
+    }
 
-                dataLayerContainer.style.right = ''; // Remove right positioning when dragging
-                dataLayerContainer.style.left = newX + 'px';
-                dataLayerContainer.style.top = newY + 'px';
-            }
-        });
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-            document.body.style.userSelect = 'auto'; // Re-enable text selection
-            header.style.cursor = 'grab';
-        });
-
-        // Add minimize/maximize functionality
-        let isMinimized = false;
-        minimizeBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent drag from starting
-            if (isMinimized) {
-                // Maximize
-                minimizeBtn.textContent = '–';
-                dataLayerContent.style.display = 'block';
-                dataLayerContainer.style.height = 'auto'; // Let height be determined by content again
-            } else {
-                // Minimize
-                minimizeBtn.textContent = '+';
-                dataLayerContent.style.display = 'none';
-                dataLayerContainer.style.height = '48px'; // A fixed height for the header
-            }
-            isMinimized = !isMinimized;
-        });
-
-        // Add double-click to reset position functionality
-        header.addEventListener('dblclick', () => {
-            dataLayerContainer.style.left = '';
-            dataLayerContainer.style.right = initialDataLayerRight;
-            dataLayerContainer.style.top = initialDataLayerTop;
-        });
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // SRP CACHE WOKER? ///////////////////////////////////////////////////////////////////////////////////
-        var srpDiv = document.getElementById('serp_results');
-        if (srpDiv !== 'undefined' && srpDiv !== null && srpDiv.innerHTML !== null && String(srpDiv.innerHTML).includes('small-order-')) {
-            var cfCacheWorkerTag = document.createElement('div');
-            cfCacheWorkerTag.style.cssText = `
+    // SRP CACHE WOKER? ///////////////////////////////////////////////////////////////////////////////////
+    var srpDiv = document.getElementById('serp_results');
+    if (srpDiv !== 'undefined' && srpDiv !== null && srpDiv.innerHTML !== null
+        && String(srpDiv.innerHTML).includes('small-order-')) {
+      var cfCacheWorkerTag = document.createElement('div');
+      cfCacheWorkerTag.style.cssText = `
                 position: fixed;
                 left: 5%;
                 top: 6%;
@@ -447,49 +646,51 @@
                 box-shadow: 0 4px 12px rgba(0,0,0,0.15);
                 backdrop-filter: blur(8px);
             `;
-            cfCacheWorkerTag.appendChild(document.createTextNode('CF SRP cache worker ran!'));
-            document.body.appendChild(cfCacheWorkerTag);
-        }
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+      cfCacheWorkerTag.appendChild(
+          document.createTextNode('CF SRP cache worker ran!'));
+      document.body.appendChild(cfCacheWorkerTag);
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // LNA/FLAN Ad Revealer //////////////////////////////////////////////////////////////////////////////////
-        function initLnaAdRevealer() {
-            if (document.getElementById('reveal-lna-btn')) {
-                return true; // Already initialized
-            }
+    // LNA/FLAN Ad Revealer //////////////////////////////////////////////////////////////////////////////////
+    function initLnaAdRevealer() {
+      if (document.getElementById('reveal-lna-btn')) {
+        return true; // Already initialized
+      }
 
-            const flanAds = document.querySelectorAll('[data-product-code="flan"]');
+      const flanAds = document.querySelectorAll('[data-product-code="flan"]');
 
-            if (flanAds.length > 0) {
-                // 1. Create a style element for the highlight effect
-                const style = document.createElement('style');
-                style.textContent = `
+      if (flanAds.length > 0) {
+        // 1. Create a style element for the highlight effect
+        const style = document.createElement('style');
+        style.textContent = `
                     .lna-ad-highlight {
                         box-shadow: 0 0 12px 4px rgba(255, 223, 0, 0.85) !important;
                         border: 2px solid #FFBF00 !important;
                         transition: box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
                     }
                 `;
-                document.head.appendChild(style);
+        document.head.appendChild(style);
 
-                // 2. Create the reveal button
-                const revealButton = document.createElement('button');
-                revealButton.id = 'reveal-lna-btn';
-                revealButton.textContent = '◻️　Reveal LNA';
+        // 2. Create the reveal button
+        const revealButton = document.createElement('button');
+        revealButton.id = 'reveal-lna-btn';
+        revealButton.textContent = '◻️　Reveal LNA';
 
-                const buildNumContainer = document.getElementById('draggable-build-num');
-                let buttonLeft, buttonTop;
+        const buildNumContainer = document.getElementById(
+            'draggable-build-num');
+        let buttonLeft, buttonTop;
 
-                if (buildNumContainer) {
-                    buttonLeft = buildNumContainer.style.left;
-                    buttonTop = buildNumContainer.style.top;
-                } else {
-                    // Fallback to initial values if build number container isn't found
-                    buttonLeft = initialBuildNumLeft;
-                    buttonTop = initialBuildNumTop;
-                }
+        if (buildNumContainer) {
+          buttonLeft = buildNumContainer.style.left;
+          buttonTop = buildNumContainer.style.top;
+        } else {
+          // Fallback to initial values if build number container isn't found
+          buttonLeft = initialBuildNumLeft;
+          buttonTop = initialBuildNumTop;
+        }
 
-                revealButton.style.cssText = `
+        revealButton.style.cssText = `
                     position: fixed;
                     left: ${buttonLeft};
                     top: ${buttonTop};
@@ -508,81 +709,83 @@
                     backdrop-filter: blur(8px);
                     transition: background-color 0.2s;
                 `;
-                document.body.appendChild(revealButton);
+        document.body.appendChild(revealButton);
 
-                // 3. Add toggle functionality to the button
-                let isRevealed = false;
-                revealButton.addEventListener('click', () => {
-                    isRevealed = !isRevealed; // Toggle the state
+        // 3. Add toggle functionality to the button
+        let isRevealed = false;
+        revealButton.addEventListener('click', () => {
+          isRevealed = !isRevealed; // Toggle the state
 
-                    // Re-query ads on each click to handle dynamic content
-                    document.querySelectorAll('[data-product-code="flan"]').forEach(ad => {
-                        ad.classList.toggle('lna-ad-highlight', isRevealed);
-                    });
+          // Re-query ads on each click to handle dynamic content
+          document.querySelectorAll('[data-product-code="flan"]').forEach(
+              ad => {
+                ad.classList.toggle('lna-ad-highlight', isRevealed);
+              });
 
-                    if (isRevealed) {
-                        revealButton.textContent = '✅　Reveal LNA';
-                        revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
-                    } else {
-                        revealButton.textContent = '◻️　Reveal LNA';
-                        revealButton.style.backgroundColor = 'rgba(0, 93, 162, 0.7)'; // Back to blue
-                    }
-                });
-                return true; // Success
-            }
-            return false; // Not found
+          if (isRevealed) {
+            revealButton.textContent = '✅　Reveal LNA';
+            revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
+          } else {
+            revealButton.textContent = '◻️　Reveal LNA';
+            revealButton.style.backgroundColor = 'rgba(0, 93, 162, 0.7)'; // Back to blue
+          }
+        });
+        return true; // Success
+      }
+      return false; // Not found
+    }
+
+    // Try to initialize immediately. If it fails, observe for changes.
+    if (!initLnaAdRevealer()) {
+      const observer = new MutationObserver((mutations, obs) => {
+        // On any DOM change, try to find the ads again.
+        if (initLnaAdRevealer()) {
+          obs.disconnect(); // Once found, stop observing.
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      // Fallback to stop observing after 5 seconds.
+      setTimeout(() => {
+        observer.disconnect();
+      }, 5000);
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Sub ID Revealer /////////////////////////////////////////////////////////////////////////////////
+    function initSubIdRevealer() {
+      // 1. Check if already initialized
+      if (document.getElementById('reveal-sub-id-btn')) {
+        return true;
+      }
+
+      // 2. Find ads with the data attribute
+      const subIdAds = document.querySelectorAll('[data-product-sub-id]');
+
+      if (subIdAds.length > 0) {
+        // 3. Create the button
+        const revealButton = document.createElement('button');
+        revealButton.id = 'reveal-sub-id-btn';
+        revealButton.textContent = '◻️　Reveal Sub IDs';
+
+        const buildNumContainer = document.getElementById(
+            'draggable-build-num');
+        let buttonLeft, buttonTop;
+
+        if (buildNumContainer) {
+          buttonLeft = buildNumContainer.style.left;
+          buttonTop = buildNumContainer.style.top;
+        } else {
+          // Fallback
+          buttonLeft = initialBuildNumLeft;
+          buttonTop = initialBuildNumTop;
         }
 
-        // Try to initialize immediately. If it fails, observe for changes.
-        if (!initLnaAdRevealer()) {
-            const observer = new MutationObserver((mutations, obs) => {
-                // On any DOM change, try to find the ads again.
-                if (initLnaAdRevealer()) {
-                    obs.disconnect(); // Once found, stop observing.
-                }
-            });
-
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-
-            // Fallback to stop observing after 5 seconds.
-            setTimeout(() => {
-                observer.disconnect();
-            }, 5000);
-        }
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // Sub ID Revealer /////////////////////////////////////////////////////////////////////////////////
-        function initSubIdRevealer() {
-            // 1. Check if already initialized
-            if (document.getElementById('reveal-sub-id-btn')) {
-                return true;
-            }
-
-            // 2. Find ads with the data attribute
-            const subIdAds = document.querySelectorAll('[data-product-sub-id]');
-
-            if (subIdAds.length > 0) {
-                // 3. Create the button
-                const revealButton = document.createElement('button');
-                revealButton.id = 'reveal-sub-id-btn';
-                revealButton.textContent = '◻️　Reveal Sub IDs';
-
-                const buildNumContainer = document.getElementById('draggable-build-num');
-                let buttonLeft, buttonTop;
-
-                if (buildNumContainer) {
-                    buttonLeft = buildNumContainer.style.left;
-                    buttonTop = buildNumContainer.style.top;
-                } else {
-                    // Fallback
-                    buttonLeft = initialBuildNumLeft;
-                    buttonTop = initialBuildNumTop;
-                }
-
-                revealButton.style.cssText = `
+        revealButton.style.cssText = `
                     position: fixed;
                     left: ${buttonLeft};
                     top: ${buttonTop};
@@ -601,30 +804,32 @@
                     backdrop-filter: blur(8px);
                     transition: background-color 0.2s;
                 `;
-                document.body.appendChild(revealButton);
+        document.body.appendChild(revealButton);
 
-                // 4. Add click functionality
-                let isRevealed = false;
-                revealButton.addEventListener('click', () => {
-                    isRevealed = !isRevealed;
+        // 4. Add click functionality
+        let isRevealed = false;
+        revealButton.addEventListener('click', () => {
+          isRevealed = !isRevealed;
 
-                    document.querySelectorAll('[data-product-sub-id]').forEach(ad => {
-                        if (isRevealed) {
-                            // Prevent adding duplicate displays
-                            if (ad.querySelector('.sub-id-display')) return;
+          document.querySelectorAll('[data-product-sub-id]').forEach(ad => {
+            if (isRevealed) {
+              // Prevent adding duplicate displays
+              if (ad.querySelector('.sub-id-display')) {
+                return;
+              }
 
-                            const originalPosition = window.getComputedStyle(ad).position;
-                            if (originalPosition === 'static') {
-                                ad.style.position = 'relative';
-                                // Store original position to revert later
-                                ad.dataset.originalPosition = 'static';
-                            }
+              const originalPosition = window.getComputedStyle(ad).position;
+              if (originalPosition === 'static') {
+                ad.style.position = 'relative';
+                // Store original position to revert later
+                ad.dataset.originalPosition = 'static';
+              }
 
-                            const subId = ad.dataset.productSubId;
-                            const displayElement = document.createElement('div');
-                            displayElement.className = 'sub-id-display';
-                            displayElement.textContent = subId;
-                            displayElement.style.cssText = `
+              const subId = ad.dataset.productSubId;
+              const displayElement = document.createElement('div');
+              displayElement.className = 'sub-id-display';
+              displayElement.textContent = subId;
+              displayElement.style.cssText = `
                                 position: absolute;
                                 top: 2px;
                                 right: 2px;
@@ -639,65 +844,64 @@
                                 user-select: all;
                                 line-height: 1.2;
                             `;
-                            ad.appendChild(displayElement);
-                        } else {
-                            // Remove the sub-id display
-                            const displayElement = ad.querySelector('.sub-id-display');
-                            if (displayElement) {
-                                displayElement.remove();
-                            }
-                            // Revert position if we changed it
-                            if (ad.dataset.originalPosition === 'static') {
-                                ad.style.position = 'static';
-                                delete ad.dataset.originalPosition;
-                            }
-                        }
-                    });
-
-                    // Update button state
-                    if (isRevealed) {
-                        revealButton.textContent = '✅　Reveal Sub IDs';
-                        revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
-                    } else {
-                        revealButton.textContent = '◻️　Reveal Sub IDs';
-                        revealButton.style.backgroundColor = 'rgba(0, 93, 162, 0.7)'; // Back to blue
-                    }
-                });
-                return true; // Success
+              ad.appendChild(displayElement);
+            } else {
+              // Remove the sub-id display
+              const displayElement = ad.querySelector('.sub-id-display');
+              if (displayElement) {
+                displayElement.remove();
+              }
+              // Revert position if we changed it
+              if (ad.dataset.originalPosition === 'static') {
+                ad.style.position = 'static';
+                delete ad.dataset.originalPosition;
+              }
             }
-            return false; // Not found
+          });
+
+          // Update button state
+          if (isRevealed) {
+            revealButton.textContent = '✅　Reveal Sub IDs';
+            revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
+          } else {
+            revealButton.textContent = '◻️　Reveal Sub IDs';
+            revealButton.style.backgroundColor = 'rgba(0, 93, 162, 0.7)'; // Back to blue
+          }
+        });
+        return true; // Success
+      }
+      return false; // Not found
+    }
+
+    // Try to initialize immediately. If it fails, observe for changes.
+    if (!initSubIdRevealer()) {
+      const observer = new MutationObserver((mutations, obs) => {
+        if (initSubIdRevealer()) {
+          obs.disconnect(); // Once found, stop observing.
         }
+      });
 
-        // Try to initialize immediately. If it fails, observe for changes.
-        if (!initSubIdRevealer()) {
-            const observer = new MutationObserver((mutations, obs) => {
-                if (initSubIdRevealer()) {
-                    obs.disconnect(); // Once found, stop observing.
-                }
-            });
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
 
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
+      // Fallback to stop observing after 5 seconds.
+      setTimeout(() => {
+        observer.disconnect();
+      }, 5000);
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            // Fallback to stop observing after 5 seconds.
-            setTimeout(() => {
-                observer.disconnect();
-            }, 5000);
-        }
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        // Shortcut to disable env indicator //////////////////////////////////////////////////////////////////
-        var envInd = document.getElementById('acs-commons-env-indicator');
-        if (envInd !== 'undefined' && envInd !== null) {
-            envInd.style.visibility = 'hidden';
-        }
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    } catch (err) {
-        var errorDiv = document.createElement('pre');
-        errorDiv.style.cssText = `
+    // Shortcut to disable env indicator //////////////////////////////////////////////////////////////////
+    var envInd = document.getElementById('acs-commons-env-indicator');
+    if (envInd !== 'undefined' && envInd !== null) {
+      envInd.style.visibility = 'hidden';
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  } catch (err) {
+    var errorDiv = document.createElement('pre');
+    errorDiv.style.cssText = `
             position: fixed;
             left: 1%;
             bottom: 1%;
@@ -712,8 +916,10 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             backdrop-filter: blur(8px);
         `;
-        errorDiv.appendChild(document.createTextNode('LD DEV TOOLS ERROR:\n' + err));
-        document.body.appendChild(errorDiv);
-    }
+    errorDiv.appendChild(
+        document.createTextNode('LD DEV TOOLS ERROR:\n' + err));
+    document.body.appendChild(errorDiv);
+  }
 })();
+
 
