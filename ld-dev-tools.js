@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.2.3
+// @version      1.2.4
 // @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -298,6 +298,7 @@
     buttonContainer.style.cssText = 'display: flex; align-items: center;';
     header.appendChild(buttonContainer);
 
+    // NEW API Button
     var apiBtn = document.createElement('button');
     apiBtn.textContent = 'API';
     apiBtn.style.cssText = `
@@ -332,35 +333,83 @@
         existingWidget.remove();
       }
 
-      const apiUrl = window.location.origin + '/frontend/v2/model'
-          + window.location.pathname;
       const apiBtnRef = apiBtn;
       apiBtnRef.textContent = '...'; // Loading state
 
+      const v2Url = window.location.origin + '/frontend/v2/model'
+          + window.location.pathname;
+      const v1Url = window.location.origin + '/frontend/v1/model'
+          + window.location.pathname;
+
+      // Define v1 fetch function (fallback)
+      function fetchV1() {
+        GM_xmlhttpRequest({
+          method: "GET",
+          url: v1Url,
+          onload: function (response) {
+            apiBtnRef.textContent = 'API'; // Restore button text
+            let content = '';
+            let title = 'API Model (v1)';
+
+            if ((response.status >= 200 && response.status < 300) || response.status === 410) {
+              try {
+                const jsonData = JSON.parse(response.responseText);
+                content = JSON.stringify(jsonData, null, 2); // Pretty print
+              } catch (err) {
+                title = 'API Model (v1 Parse Error)';
+                content = 'Error parsing JSON:\n' + err + '\n\n'
+                    + response.responseText;
+              }
+            } else {
+              // Both v2 and v1 failed
+              title = 'API Model (All Failed)';
+              content = `v2 request failed (see console).\n\nv1 request failed with status: ${response.status}\n\n${response.responseText}`;
+            }
+            createDraggableWidget('api-model-widget', title, content, '25%',
+                '5%', 350);
+          },
+          onerror: function (error) {
+            // Both v2 and v1 failed
+            apiBtnRef.textContent = 'API'; // Restore button text
+            const errorContent = 'v2 request failed (see console).\n\nv1 Fetch Error:\n'
+                + JSON.stringify(error, null, 2);
+            createDraggableWidget('api-model-widget', 'API Model (All Failed)',
+                errorContent, '25%', '5%', 350);
+          }
+        });
+      }
+
+      // Try v2 first
       GM_xmlhttpRequest({
         method: "GET",
-        url: apiUrl,
+        url: v2Url,
         onload: function (response) {
-          apiBtnRef.textContent = 'API'; // Restore button text
-          let content = '';
-          let title = 'API Model';
-          try {
-            const jsonData = JSON.parse(response.responseText);
-            content = JSON.stringify(jsonData, null, 2); // Pretty print
-          } catch (err) {
-            title = 'API Model (Parse Error)';
-            content = 'Error parsing JSON:\n' + err + '\n\n'
-                + response.responseText;
+          if ((response.status >= 200 && response.status < 300) || response.status === 410) {
+            apiBtnRef.textContent = 'API'; // Restore button text
+            let content = '';
+            let title = 'API Model';
+            try {
+              const jsonData = JSON.parse(response.responseText);
+              content = JSON.stringify(jsonData, null, 2); // Pretty print
+            } catch (err) {
+              title = 'API Model (v2 Parse Error)';
+              content = 'Error parsing JSON:\n' + err + '\n\n'
+                  + response.responseText;
+            }
+            createDraggableWidget('api-model-widget', title, content, '25%',
+                '5%', 350);
+          } else {
+            // v2 failed, try v1
+            console.log(
+                `LD Dev Tools: v2 model failed (status: ${response.status}), trying v1...`);
+            fetchV1();
           }
-          createDraggableWidget('api-model-widget', title, content, '25%', '5%',
-              350);
         },
         onerror: function (error) {
-          apiBtnRef.textContent = 'API'; // Restore button text
-          const errorContent = 'Error fetching data:\n' + JSON.stringify(error,
-              null, 2);
-          createDraggableWidget('api-model-widget', 'API Model (Fetch Error)',
-              errorContent, '25%', '5%', 350);
+          // v2 failed, try v1
+          console.log(`LD Dev Tools: v2 model fetch error: ${JSON.stringify(
+              error)}, trying v1...`);
+          fetchV1();
         }
       });
     });
@@ -921,5 +970,4 @@
     document.body.appendChild(errorDiv);
   }
 })();
-
 
