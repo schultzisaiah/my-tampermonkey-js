@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.2.1
+// @version      1.2.2
 // @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -282,7 +282,48 @@
             font-weight: bold;
             color: black;
         `;
-        header.innerHTML = 'DataLayer';
+        
+        var headerTitle = document.createElement('span');
+        headerTitle.textContent = 'DataLayer';
+        header.appendChild(headerTitle);
+
+        // Container for buttons
+        var buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = 'display: flex; align-items: center;';
+        header.appendChild(buttonContainer);
+
+        var apiBtn = document.createElement('button');
+        apiBtn.textContent = 'API';
+        apiBtn.style.cssText = `
+            background: rgba(0, 0, 0, 0.08); /* Light bg */
+            border: 1px solid rgba(0, 0, 0, 0.15); /* Subtle border */
+            border-radius: 4px; /* Rounded corners */
+            color: black;
+            font-size: 0.75rem; /* Slightly smaller */
+            font-weight: bold;
+            line-height: 1;
+            cursor: pointer;
+            padding: 3px 6px; /* Adjusted padding */
+            margin-right: 6px; /* Space it from minimize btn */
+            transition: background-color 0.2s;
+        `;
+        apiBtn.title = 'Open model/json endpoint'; // Add a tooltip
+
+        // Add hover effect
+        apiBtn.addEventListener('mouseenter', () => {
+            apiBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.15)';
+        });
+        apiBtn.addEventListener('mouseleave', () => {
+            apiBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.08)';
+        });
+
+        apiBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent drag from starting
+            const newUrl = window.location.origin + '/frontend/v2/model' + window.location.pathname;
+            window.open(newUrl, '_blank');
+        });
+        buttonContainer.appendChild(apiBtn);
+
 
         // Minimize button
         var minimizeBtn = document.createElement('button');
@@ -297,7 +338,7 @@
             padding: 4px;
             transition: transform 0.2s ease-in-out;
         `;
-        header.appendChild(minimizeBtn);
+        buttonContainer.appendChild(minimizeBtn);
         dataLayerContainer.appendChild(header);
 
         // Content area for the data layer text
@@ -364,7 +405,8 @@
 
         // Add minimize/maximize functionality
         let isMinimized = false;
-        minimizeBtn.addEventListener('click', () => {
+        minimizeBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent drag from starting
             if (isMinimized) {
                 // Maximize
                 minimizeBtn.textContent = '–';
@@ -674,3 +716,4 @@
         document.body.appendChild(errorDiv);
     }
 })();
+
