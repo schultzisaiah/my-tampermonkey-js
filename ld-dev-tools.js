@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.2.4
+// @version      1.2.5
 // @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -366,7 +366,7 @@
               content = `v2 request failed (see console).\n\nv1 request failed with status: ${response.status}\n\n${response.responseText}`;
             }
             createDraggableWidget('api-model-widget', title, content, '25%',
-                '5%', 350);
+                '5%', 350, v1Url);
           },
           onerror: function (error) {
             // Both v2 and v1 failed
@@ -397,7 +397,7 @@
                   + response.responseText;
             }
             createDraggableWidget('api-model-widget', title, content, '25%',
-                '5%', 350);
+                '5%', 350, v2Url);
           } else {
             // v2 failed, try v1
             console.log(
@@ -522,7 +522,7 @@
 
     // Draggable Widget Creator ///////////////////////////////////////////////////////////////////////////
     function createDraggableWidget(id, title, content, initialLeft, initialTop,
-        width = 300) {
+        width = 300, urlToOpen = null) {
       // Main container
       var widgetContainer = document.createElement('div');
       widgetContainer.id = id;
@@ -565,6 +565,28 @@
       var buttonContainer = document.createElement('div');
       buttonContainer.style.cssText = 'display: flex; align-items: center;';
       header.appendChild(buttonContainer);
+
+      // Open URL button
+      if (urlToOpen) {
+        var openUrlBtn = document.createElement('button');
+        openUrlBtn.textContent = '⇱';
+        openUrlBtn.title = 'Open URL in new tab';
+        openUrlBtn.style.cssText = `
+                    background: none;
+                    border: none;
+                    color: black;
+                    font-size: 1.2rem;
+                    line-height: 1;
+                    cursor: pointer;
+                    padding: 4px;
+                    margin-right: 16px;
+                `;
+        openUrlBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.open(urlToOpen, '_blank');
+        });
+        buttonContainer.appendChild(openUrlBtn);
+      }
 
       // Minimize button
       var minimizeBtn = document.createElement('button');
@@ -970,4 +992,3 @@
     document.body.appendChild(errorDiv);
   }
 })();
-
