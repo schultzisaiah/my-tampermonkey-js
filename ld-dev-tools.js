@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         LD Dev Tools
-// @version      1.2.5
+// @version      1.2.6
 // @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -14,11 +14,6 @@
 // @match        https://lawyers.findlaw-dev.com/*
 // @match        https://lawyers.findlaw-qa.com/*
 // @match        https://lawyersorigin.findlaw-qa.com/*
-// @match        https://www.lawinfo.com/*
-// @match        https://www.lawinfo-stage.com/*
-// @match        https://www.lawinfo-qa.com/*
-// @match        https://www.lawinfo-qa.com/*
-// @match        https://www.lawinfo-dev.com/*
 // @match        https://www.flportaldev.int.thomsonreuters.com/*
 // @match        https://www.flportalqa.int.thomsonreuters.com/*
 // @match        https://www.flportalstage.int.thomsonreuters.com/*
@@ -31,18 +26,45 @@
 // @match        https://public.flportalqa.int.thomsonreuters.com/*
 // @match        https://public.flportalstage.int.thomsonreuters.com/*
 // @match        https://public.findlaw.com/*
-// @match        https://www.superlawyers.com/*
-// @match        https://attorneys.superlawyers.com/*
-// @match        https://profiles.superlawyers.com/*
-// @match        https://www.abogado.com/*
-// @match        https://www.abogado-stage.com/*
-// @match        https://www.abogado-qa.com/*
-// @match        https://www.superlawyers-qa.com/*
-// @match        https://www.superlawyers-stage.com/*
+// @match        https://answers-local.superlawyers-dev.com/*
+// @match        https://answers.superlawyers-dev.com/*
+// @match        https://answers.superlawyers-qa.com/*
+// @match        https://answers.superlawyers-stage.com/*
+// @match        https://answers.superlawyers.com/*
+// @match        https://my-local.superlawyers-dev.com/*
+// @match        https://my.superlawyers-dev.com/*
+// @match        https://my.superlawyers-qa.com/*
+// @match        https://my.superlawyers-stage.com/*
+// @match        https://my.superlawyers.com/*
+// @match        https://attorneys-local.superlawyers-dev.com/*
+// @match        https://attorneys.superlawyers-dev.com/*
 // @match        https://attorneys.superlawyers-qa.com/*
+// @match        https://attorneys.superlawyers-stage.com/*
+// @match        https://attorneys.superlawyers.com/*
+// @match        https://profiles-local.superlawyers-dev.com/*
+// @match        https://profiles.superlawyers-dev.com/*
 // @match        https://profiles.superlawyers-qa.com/*
 // @match        https://profiles.superlawyers-stage.com/*
-// @match        https://attorneys.superlawyers-stage.com/*
+// @match        https://profiles.superlawyers.com/*
+// @match        https://www-local.superlawyers-dev.com/*
+// @match        https://www.superlawyers-dev.com/*
+// @match        https://www.superlawyers-qa.com/*
+// @match        https://www.superlawyers-stage.com/*
+// @match        https://www.superlawyers.com/*
+// @match        https://attorneys-local.lawinfo-dev.com/*
+// @match        https://profiles-local.lawinfo-dev.com/*
+// @match        https://www-local.lawinfo-dev.com/*
+// @match        https://www.lawinfo-dev.com/*
+// @match        https://www.lawinfo-qa.com/*
+// @match        https://www.lawinfo-stage.com/*
+// @match        https://www.lawinfo.com/*
+// @match        https://attorneys-local.abogado-dev.com/*
+// @match        https://profiles-local.abogado-dev.com/*
+// @match        https://www-local.abogado-dev.com/*
+// @match        https://www.abogado-dev.com/*
+// @match        https://www.abogado-qa.com/*
+// @match        https://www.abogado-stage.com/*
+// @match        https://www.abogado.com/*
 // @match        http://localhost:8080/*
 // @grant        GM_xmlhttpRequest
 // @noframes
