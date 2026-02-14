@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         LD Dev Tools
-// @version      1.2.6
+// @name        LD Dev Tools
+// @version      1.2.7
 // @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -76,6 +76,39 @@
     return;
   }
   try {
+    // Check for FLDataLayer existence before proceeding
+    if (typeof FLDataLayer === 'undefined') {
+      var msg = document.createElement('div');
+      msg.textContent = 'No FLDataLayer found';
+      msg.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        z-index: 10000;
+        pointer-events: none;
+        transition: opacity 1s ease-out;
+        font-family: sans-serif;
+        font-size: 12px;
+        opacity: 1;
+      `;
+      document.body.appendChild(msg);
+
+      // Fade out and remove
+      setTimeout(function() {
+        msg.style.opacity = '0';
+        setTimeout(function() {
+            if (msg.parentNode) msg.parentNode.removeChild(msg);
+        }, 1000);
+      }, 3000);
+
+      return; // Stop script execution
+    }
+
     // Build Number:///////////////////////////////////////////////////////////////////////////////////////
     var buildNumTxt = 'Build: unknown';
     if (typeof BuildNumber !== 'undefined') {
