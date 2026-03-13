@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LD Dev Tools
-// @version      1.2.7
+// @version      1.2.8
 // @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -193,6 +193,31 @@
     buildNumContainer.appendChild(buildNumDiv);
     document.body.appendChild(buildNumContainer);
 
+    // Shared button stack — sits directly below the build number container
+    var buttonStack = document.createElement('div');
+    buttonStack.id = 'ld-button-stack';
+    buttonStack.style.cssText = `
+            position: fixed;
+            left: ${initialBuildNumLeft};
+            top: ${initialBuildNumTop};
+            z-index: 9998;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-start;
+        `;
+    document.body.appendChild(buttonStack);
+
+    // Keep the stack snapped below the build number container
+    function syncButtonStack() {
+      var rect = buildNumContainer.getBoundingClientRect();
+      buttonStack.style.left = rect.left + 'px';
+      buttonStack.style.top = (rect.bottom + 6) + 'px';
+    }
+    // Sync once after layout, then again on resize
+    requestAnimationFrame(syncButtonStack);
+    window.addEventListener('resize', syncButtonStack);
+
     // Add drag and drop functionality for Build Number
     let isDraggingBuildNum = false;
     let offsetBuildNum = {x: 0, y: 0};
@@ -222,17 +247,8 @@
         buildNumContainer.style.left = newX + 'px';
         buildNumContainer.style.top = newY + 'px';
 
-        // Move other buttons along with the build number
-        const revealLnaButton = document.getElementById('reveal-lna-btn');
-        if (revealLnaButton) {
-          revealLnaButton.style.left = newX + 'px';
-          revealLnaButton.style.top = newY + 'px';
-        }
-        const revealSubIdButton = document.getElementById('reveal-sub-id-btn');
-        if (revealSubIdButton) {
-          revealSubIdButton.style.left = newX + 'px';
-          revealSubIdButton.style.top = newY + 'px';
-        }
+        // Keep button stack snapped below the build number
+        syncButtonStack();
       }
     });
 
@@ -246,17 +262,7 @@
     buildNumContainer.addEventListener('dblclick', () => {
       buildNumContainer.style.left = initialBuildNumLeft;
       buildNumContainer.style.top = initialBuildNumTop;
-
-      const revealLnaButton = document.getElementById('reveal-lna-btn');
-      if (revealLnaButton) {
-        revealLnaButton.style.left = initialBuildNumLeft;
-        revealLnaButton.style.top = initialBuildNumTop;
-      }
-      const revealSubIdButton = document.getElementById('reveal-sub-id-btn');
-      if (revealSubIdButton) {
-        revealSubIdButton.style.left = initialBuildNumLeft;
-        revealSubIdButton.style.top = initialBuildNumTop;
-      }
+      syncButtonStack();
     });
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -803,25 +809,7 @@
         revealButton.id = 'reveal-lna-btn';
         revealButton.textContent = '◻️　Reveal LNA';
 
-        const buildNumContainer = document.getElementById(
-            'draggable-build-num');
-        let buttonLeft, buttonTop;
-
-        if (buildNumContainer) {
-          buttonLeft = buildNumContainer.style.left;
-          buttonTop = buildNumContainer.style.top;
-        } else {
-          // Fallback to initial values if build number container isn't found
-          buttonLeft = initialBuildNumLeft;
-          buttonTop = initialBuildNumTop;
-        }
-
         revealButton.style.cssText = `
-                    position: fixed;
-                    left: ${buttonLeft};
-                    top: ${buttonTop};
-                    transform: translateY(90px); /* move below the Sub ID button */
-                    z-index: 9998;
                     padding: 6px 12px;
                     background-color: rgba(0, 93, 162, 0.7); /* Blue */
                     color: white;
@@ -835,7 +823,14 @@
                     backdrop-filter: blur(8px);
                     transition: background-color 0.2s;
                 `;
-        document.body.appendChild(revealButton);
+
+        var stackContainer = document.getElementById('ld-button-stack');
+        if (stackContainer) {
+          stackContainer.appendChild(revealButton);
+        } else {
+          revealButton.style.cssText += 'position:fixed;left:5%;top:1%;';
+          document.body.appendChild(revealButton);
+        }
 
         // 3. Add toggle functionality to the button
         let isRevealed = false;
@@ -898,25 +893,7 @@
         revealButton.id = 'reveal-sub-id-btn';
         revealButton.textContent = '◻️　Reveal Sub IDs';
 
-        const buildNumContainer = document.getElementById(
-            'draggable-build-num');
-        let buttonLeft, buttonTop;
-
-        if (buildNumContainer) {
-          buttonLeft = buildNumContainer.style.left;
-          buttonTop = buildNumContainer.style.top;
-        } else {
-          // Fallback
-          buttonLeft = initialBuildNumLeft;
-          buttonTop = initialBuildNumTop;
-        }
-
         revealButton.style.cssText = `
-                    position: fixed;
-                    left: ${buttonLeft};
-                    top: ${buttonTop};
-                    transform: translateY(50px); /* move below the build number element */
-                    z-index: 9998;
                     padding: 6px 12px;
                     background-color: rgba(0, 93, 162, 0.7); /* Blue */
                     color: white;
@@ -930,7 +907,14 @@
                     backdrop-filter: blur(8px);
                     transition: background-color 0.2s;
                 `;
-        document.body.appendChild(revealButton);
+
+        var stackContainer = document.getElementById('ld-button-stack');
+        if (stackContainer) {
+          stackContainer.appendChild(revealButton);
+        } else {
+          revealButton.style.cssText += 'position:fixed;left:5%;top:1%;';
+          document.body.appendChild(revealButton);
+        }
 
         // 4. Add click functionality
         let isRevealed = false;
@@ -1015,6 +999,291 @@
       // Fallback to stop observing after 5 seconds.
       setTimeout(() => {
         observer.disconnect();
+      }, 5000);
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Auth Pref Revealer /////////////////////////////////////////////////////////////////////////////////
+    function initAuthPrefRevealer() {
+      // 1. Check if already initialized
+      if (document.getElementById('reveal-auth-pref-btn')) {
+        return true;
+      }
+
+      // 2. Extract flappl- profile IDs from FLDataLayer
+      var productProfileID;
+      try {
+        productProfileID = FLDataLayer.search.productProfileID;
+      } catch (e) {
+        return false;
+      }
+      if (!productProfileID) {
+        return false;
+      }
+
+      var authPrefIds = [];
+      productProfileID.split(',').forEach(function(id) {
+        id = id.trim();
+        if (id.indexOf('flappl-') === 0) {
+          var numericId = id.replace('flappl-', '');
+          if (numericId) {
+            authPrefIds.push(numericId);
+          }
+        }
+      });
+
+      if (authPrefIds.length === 0) {
+        return false;
+      }
+
+      // 3. Find the matching result cards (the closest li/article ancestor containing a [name*="cid:ID/"] element)
+      var authPrefCards = [];
+      authPrefIds.forEach(function(cid) {
+        var selector = '[name*="cid:' + cid + '/"], [name*="cid:' + cid + '"]';
+        var matchingEls = document.querySelectorAll(selector);
+        matchingEls.forEach(function(el) {
+          // Walk up to find the card container (li or article with serp-card class)
+          var card = el.closest('li, article');
+          if (card && authPrefCards.indexOf(card) === -1) {
+            authPrefCards.push(card);
+          }
+        });
+      });
+
+      if (authPrefCards.length === 0) {
+        return false;
+      }
+
+      // 4. Create highlight style
+      var style = document.createElement('style');
+      style.textContent = `
+                .auth-pref-highlight {
+                    box-shadow: 0 0 12px 4px rgba(168, 85, 247, 0.85) !important;
+                    border: 2px solid #7c3aed !important;
+                    transition: box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
+                }
+            `;
+      document.head.appendChild(style);
+
+      // 5. Create the button
+      var revealButton = document.createElement('button');
+      revealButton.id = 'reveal-auth-pref-btn';
+      revealButton.textContent = '◻️　Reveal Auth Pref';
+
+      revealButton.style.cssText = `
+                padding: 6px 12px;
+                background-color: rgba(109, 40, 217, 0.7); /* Purple */
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                border-radius: 6px;
+                cursor: pointer;
+                font-family: sans-serif;
+                font-size: x-small;
+                font-weight: bold;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                backdrop-filter: blur(8px);
+                transition: background-color 0.2s;
+            `;
+
+      var stackContainer = document.getElementById('ld-button-stack');
+      if (stackContainer) {
+        stackContainer.appendChild(revealButton);
+      } else {
+        revealButton.style.cssText += 'position:fixed;left:5%;top:1%;';
+        document.body.appendChild(revealButton);
+      }
+
+      // 6. Add toggle functionality
+      var isRevealed = false;
+      revealButton.addEventListener('click', function() {
+        isRevealed = !isRevealed;
+
+        // Re-resolve cards on each click in case DOM changed
+        var currentCards = [];
+        authPrefIds.forEach(function(cid) {
+          var selector = '[name*="cid:' + cid + '/"], [name*="cid:' + cid + '"]';
+          document.querySelectorAll(selector).forEach(function(el) {
+            var card = el.closest('li, article');
+            if (card && currentCards.indexOf(card) === -1) {
+              currentCards.push(card);
+            }
+          });
+        });
+
+        currentCards.forEach(function(card) {
+          card.classList.toggle('auth-pref-highlight', isRevealed);
+        });
+
+        if (isRevealed) {
+          revealButton.textContent = '✅　Reveal Auth Pref';
+          revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
+        } else {
+          revealButton.textContent = '◻️　Reveal Auth Pref';
+          revealButton.style.backgroundColor = 'rgba(109, 40, 217, 0.7)'; // Back to purple
+        }
+      });
+
+      return true;
+    }
+
+    // Try to initialize immediately. If it fails, observe for changes.
+    if (!initAuthPrefRevealer()) {
+      var authPrefObserver = new MutationObserver(function(mutations, obs) {
+        if (initAuthPrefRevealer()) {
+          obs.disconnect();
+        }
+      });
+
+      authPrefObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      // Fallback to stop observing after 5 seconds.
+      setTimeout(function() {
+        authPrefObserver.disconnect();
+      }, 5000);
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Auth Foun Revealer /////////////////////////////////////////////////////////////////////////////////
+    function initAuthFounRevealer() {
+      // 1. Check if already initialized
+      if (document.getElementById('reveal-auth-foun-btn')) {
+        return true;
+      }
+
+      // 2. Extract flafpl- profile IDs from FLDataLayer
+      var productProfileID;
+      try {
+        productProfileID = FLDataLayer.search.productProfileID;
+      } catch (e) {
+        return false;
+      }
+      if (!productProfileID) {
+        return false;
+      }
+
+      var authFounIds = [];
+      productProfileID.split(',').forEach(function(id) {
+        id = id.trim();
+        if (id.indexOf('flafpl-') === 0) {
+          var numericId = id.replace('flafpl-', '');
+          if (numericId) {
+            authFounIds.push(numericId);
+          }
+        }
+      });
+
+      if (authFounIds.length === 0) {
+        return false;
+      }
+
+      // 3. Find the matching result cards
+      var authFounCards = [];
+      authFounIds.forEach(function(cid) {
+        var selector = '[name*="cid:' + cid + '/"], [name*="cid:' + cid + '"]';
+        var matchingEls = document.querySelectorAll(selector);
+        matchingEls.forEach(function(el) {
+          var card = el.closest('li, article');
+          if (card && authFounCards.indexOf(card) === -1) {
+            authFounCards.push(card);
+          }
+        });
+      });
+
+      if (authFounCards.length === 0) {
+        return false;
+      }
+
+      // 4. Create highlight style
+      var style = document.createElement('style');
+      style.textContent = `
+                .auth-foun-highlight {
+                    box-shadow: 0 0 12px 4px rgba(20, 184, 166, 0.85) !important;
+                    border: 2px solid #0d9488 !important;
+                    transition: box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
+                }
+            `;
+      document.head.appendChild(style);
+
+      // 5. Create the button
+      var revealButton = document.createElement('button');
+      revealButton.id = 'reveal-auth-foun-btn';
+      revealButton.textContent = '◻️　Reveal Auth Foun';
+
+      revealButton.style.cssText = `
+                padding: 6px 12px;
+                background-color: rgba(13, 148, 136, 0.7); /* Teal */
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                border-radius: 6px;
+                cursor: pointer;
+                font-family: sans-serif;
+                font-size: x-small;
+                font-weight: bold;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                backdrop-filter: blur(8px);
+                transition: background-color 0.2s;
+            `;
+
+      var stackContainer = document.getElementById('ld-button-stack');
+      if (stackContainer) {
+        stackContainer.appendChild(revealButton);
+      } else {
+        revealButton.style.cssText += 'position:fixed;left:5%;top:1%;';
+        document.body.appendChild(revealButton);
+      }
+
+      // 6. Add toggle functionality
+      var isRevealed = false;
+      revealButton.addEventListener('click', function() {
+        isRevealed = !isRevealed;
+
+        // Re-resolve cards on each click in case DOM changed
+        var currentCards = [];
+        authFounIds.forEach(function(cid) {
+          var selector = '[name*="cid:' + cid + '/"], [name*="cid:' + cid + '"]';
+          document.querySelectorAll(selector).forEach(function(el) {
+            var card = el.closest('li, article');
+            if (card && currentCards.indexOf(card) === -1) {
+              currentCards.push(card);
+            }
+          });
+        });
+
+        currentCards.forEach(function(card) {
+          card.classList.toggle('auth-foun-highlight', isRevealed);
+        });
+
+        if (isRevealed) {
+          revealButton.textContent = '✅　Reveal Auth Foun';
+          revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
+        } else {
+          revealButton.textContent = '◻️　Reveal Auth Foun';
+          revealButton.style.backgroundColor = 'rgba(13, 148, 136, 0.7)'; // Back to teal
+        }
+      });
+
+      return true;
+    }
+
+    // Try to initialize immediately. If it fails, observe for changes.
+    if (!initAuthFounRevealer()) {
+      var authFounObserver = new MutationObserver(function(mutations, obs) {
+        if (initAuthFounRevealer()) {
+          obs.disconnect();
+        }
+      });
+
+      authFounObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      // Fallback to stop observing after 5 seconds.
+      setTimeout(function() {
+        authFounObserver.disconnect();
       }, 5000);
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
