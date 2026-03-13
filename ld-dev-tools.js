@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LD Dev Tools
-// @version      1.2.10
+// @version      1.2.11
 // @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -1116,7 +1116,7 @@
 
         if (isRevealed) {
           revealButton.textContent = '✅　Reveal Auth Preference';
-          revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
+          revealButton.style.backgroundColor = 'rgba(69,3,170,0.7)'; // Orange when active
         } else {
           revealButton.textContent = '◻️　Reveal Auth Preference';
           revealButton.style.backgroundColor = 'rgba(109, 40, 217, 0.7)'; // Back to purple
@@ -1258,7 +1258,7 @@
 
         if (isRevealed) {
           revealButton.textContent = '✅　Reveal Auth Foundation';
-          revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
+          revealButton.style.backgroundColor = 'rgba(0,89,81,0.7)'; // Orange when active
         } else {
           revealButton.textContent = '◻️　Reveal Auth Foundation';
           revealButton.style.backgroundColor = 'rgba(13, 148, 136, 0.7)'; // Back to teal
