@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LD Dev Tools
-// @version      1.2.9
+// @version      1.2.10
 // @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -1068,7 +1068,7 @@
       // 5. Create the button
       var revealButton = document.createElement('button');
       revealButton.id = 'reveal-auth-pref-btn';
-      revealButton.textContent = '◻️　Reveal Auth Pref';
+      revealButton.textContent = '◻️　Reveal Auth Preference';
 
       revealButton.style.cssText = `
                 padding: 6px 12px;
@@ -1210,7 +1210,7 @@
       // 5. Create the button
       var revealButton = document.createElement('button');
       revealButton.id = 'reveal-auth-foun-btn';
-      revealButton.textContent = '◻️　Reveal Auth Foun';
+      revealButton.textContent = '◻️　Reveal Auth Foundation';
 
       revealButton.style.cssText = `
                 padding: 6px 12px;
