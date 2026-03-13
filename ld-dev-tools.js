@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LD Dev Tools
-// @version      1.2.8
+// @version      1.2.9
 // @description  try to take over the world!
 // @author       Isaiah Schultz & Gemini
 // @run-at       document-idle
@@ -1003,7 +1003,7 @@
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Auth Pref Revealer /////////////////////////////////////////////////////////////////////////////////
+    // Auth Preference Revealer ///////////////////////////////////////////////////////////////////////////
     function initAuthPrefRevealer() {
       // 1. Check if already initialized
       if (document.getElementById('reveal-auth-pref-btn')) {
@@ -1115,10 +1115,10 @@
         });
 
         if (isRevealed) {
-          revealButton.textContent = '✅　Reveal Auth Pref';
+          revealButton.textContent = '✅　Reveal Auth Preference';
           revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
         } else {
-          revealButton.textContent = '◻️　Reveal Auth Pref';
+          revealButton.textContent = '◻️　Reveal Auth Preference';
           revealButton.style.backgroundColor = 'rgba(109, 40, 217, 0.7)'; // Back to purple
         }
       });
@@ -1146,7 +1146,7 @@
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Auth Foun Revealer /////////////////////////////////////////////////////////////////////////////////
+    // Auth Foundation Revealer ///////////////////////////////////////////////////////////////////////////
     function initAuthFounRevealer() {
       // 1. Check if already initialized
       if (document.getElementById('reveal-auth-foun-btn')) {
@@ -1257,10 +1257,10 @@
         });
 
         if (isRevealed) {
-          revealButton.textContent = '✅　Reveal Auth Foun';
+          revealButton.textContent = '✅　Reveal Auth Foundation';
           revealButton.style.backgroundColor = 'rgba(217, 119, 6, 0.7)'; // Orange when active
         } else {
-          revealButton.textContent = '◻️　Reveal Auth Foun';
+          revealButton.textContent = '◻️　Reveal Auth Foundation';
           revealButton.style.backgroundColor = 'rgba(13, 148, 136, 0.7)'; // Back to teal
         }
       });
